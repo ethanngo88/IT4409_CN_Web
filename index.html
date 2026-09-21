@@ -1,0 +1,376 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Xin Chao IT4409 - Web &amp; Server Technologies</title>
+  <meta name="description" content="Trang chao hoi sieu bua danh cho hoc phan IT4409 - Cong nghe Web va Server, HUST." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Be+Vietnam+Pro:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg-dark: #0d0d1a;
+      --bg-card: rgba(255,255,255,0.04);
+      --neon-blue: #00d4ff;
+      --neon-pink: #ff2d78;
+      --neon-green: #39ff14;
+      --neon-yellow: #ffe600;
+      --neon-purple: #bf5fff;
+      --text: #f0f0ff;
+      --muted: #9090b0;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg-dark);
+      color: var(--text);
+      font-family: "Be Vietnam Pro", sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+    .bg-glow {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0,212,255,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(255,45,120,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(63,30,120,0.25) 0%, transparent 70%);
+      animation: bgPulse 8s ease-in-out infinite alternate;
+    }
+    @keyframes bgPulse { from{opacity:0.7;} to{opacity:1;} }
+    .particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0;
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      0%   { opacity: 0; transform: translateY(0) scale(0.5); }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { opacity: 0; transform: translateY(-100vh) scale(1.2); }
+    }
+    main {
+      position: relative; z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 20px 80px;
+      display: flex; flex-direction: column; align-items: center; gap: 36px;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(0,212,255,0.1);
+      border: 1px solid rgba(0,212,255,0.35);
+      border-radius: 99px;
+      padding: 6px 18px;
+      font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px;
+      color: var(--neon-blue);
+      text-transform: uppercase;
+      animation: fadeSlideDown 0.6s ease both;
+    }
+    .badge-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--neon-green);
+      box-shadow: 0 0 8px var(--neon-green);
+      animation: blink 1.4s ease-in-out infinite;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
+    .hero-title {
+      font-family: "Bangers", cursive;
+      font-size: clamp(3rem, 10vw, 6rem);
+      line-height: 1;
+      text-align: center;
+      letter-spacing: 2px;
+      animation: fadeSlideDown 0.7s 0.1s ease both;
+      background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-pink) 50%, var(--neon-yellow) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 30px rgba(0,212,255,0.4));
+    }
+    .hero-subtitle {
+      text-align: center;
+      font-size: clamp(1rem, 3vw, 1.3rem);
+      color: var(--muted);
+      font-weight: 600;
+      animation: fadeSlideDown 0.7s 0.2s ease both;
+    }
+    .hero-subtitle span { color: var(--neon-pink); }
+    .meme-card {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      overflow: hidden;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 0 0 1px rgba(0,212,255,0.1), 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07);
+      animation: fadeSlideUp 0.8s 0.3s ease both;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .meme-card:hover {
+      transform: translateY(-6px) scale(1.01);
+      box-shadow: 0 0 0 1px rgba(0,212,255,0.3), 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(0,212,255,0.12), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+    .meme-img-wrap { position: relative; overflow: hidden; }
+    .meme-img-wrap img { width: 100%; display: block; transition: transform 0.5s ease; }
+    .meme-card:hover .meme-img-wrap img { transform: scale(1.03); }
+    .meme-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      padding: 16px 20px;
+      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
+      font-family: "Bangers", cursive;
+      font-size: clamp(1rem, 3vw, 1.4rem);
+      letter-spacing: 1px;
+      color: #fff;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 20px var(--neon-yellow);
+    }
+    .greeting {
+      width: 100%;
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 24px;
+      padding: 40px 36px;
+      backdrop-filter: blur(12px);
+      animation: fadeSlideUp 0.8s 0.45s ease both;
+      position: relative; overflow: hidden;
+    }
+    .greeting::before {
+      content: "";
+      position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
+    }
+    .greeting h2 {
+      font-family: "Bangers", cursive;
+      font-size: clamp(1.6rem, 5vw, 2.4rem);
+      letter-spacing: 1px;
+      margin-bottom: 20px;
+      color: var(--neon-yellow);
+      text-shadow: 0 0 20px rgba(255,230,0,0.4);
+    }
+    .greeting p { font-size: 1.05rem; line-height: 1.85; color: #c8c8e0; margin-bottom: 14px; }
+    .greeting p:last-child { margin-bottom: 0; }
+    .greeting strong { color: var(--neon-blue); }
+    .greeting em { color: var(--neon-pink); font-style: normal; font-weight: 700; }
+    .info-row {
+      display: flex; flex-wrap: wrap; gap: 12px;
+      width: 100%;
+      animation: fadeSlideUp 0.8s 0.55s ease both;
+    }
+    .info-pill {
+      flex: 1 1 calc(50% - 6px);
+      min-width: 200px;
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 20px 24px;
+      backdrop-filter: blur(12px);
+      display: flex; align-items: flex-start; gap: 14px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+    }
+    .info-pill:hover { border-color: rgba(0,212,255,0.4); box-shadow: 0 0 30px rgba(0,212,255,0.12); transform: translateY(-3px); }
+    .info-icon { font-size: 1.8rem; flex-shrink: 0; line-height: 1; }
+    .info-content strong { display: block; font-size: 0.75rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--neon-blue); margin-bottom: 4px; }
+    .info-content span { font-size: 0.95rem; font-weight: 600; color: var(--text); }
+    .quote-grid {
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+      animation: fadeSlideUp 0.8s 0.65s ease both;
+    }
+    .quote-card {
+      background: var(--bg-card);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 22px 20px;
+      backdrop-filter: blur(12px);
+      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+      cursor: default;
+    }
+    .quote-card:hover { transform: translateY(-4px); }
+    .quote-card.pink { --accent: var(--neon-pink); }
+    .quote-card.blue { --accent: var(--neon-blue); }
+    .quote-card.green { --accent: var(--neon-green); }
+    .quote-card.purple { --accent: var(--neon-purple); }
+    .quote-card:hover { border-color: var(--accent); box-shadow: 0 0 30px color-mix(in srgb, var(--accent) 20%, transparent); }
+    .quote-emoji { font-size: 2rem; display: block; margin-bottom: 10px; }
+    .quote-text { font-size: 0.92rem; line-height: 1.6; color: #b0b0d0; }
+    .quote-text strong { color: var(--accent); }
+    .cta-wrap { animation: fadeSlideUp 0.8s 0.75s ease both; }
+    .cta-btn {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink));
+      color: #fff;
+      font-family: "Bangers", cursive;
+      font-size: 1.4rem;
+      letter-spacing: 2px;
+      padding: 16px 40px;
+      border-radius: 99px;
+      text-decoration: none;
+      border: none; cursor: pointer;
+      box-shadow: 0 8px 30px rgba(0,212,255,0.3);
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+      animation: pulse 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 8px 30px rgba(0,212,255,0.3), 0 0 0 0 rgba(0,212,255,0.4); }
+      50%      { box-shadow: 0 8px 40px rgba(255,45,120,0.4), 0 0 0 12px rgba(0,212,255,0); }
+    }
+    .cta-btn:hover { transform: scale(1.06) translateY(-2px); }
+    .footer {
+      text-align: center; font-size: 0.82rem; color: var(--muted);
+      animation: fadeSlideUp 0.8s 0.85s ease both; line-height: 1.7;
+    }
+    .footer a { color: var(--neon-blue); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+    @keyframes fadeSlideDown { from{opacity:0;transform:translateY(-20px);} to{opacity:1;transform:translateY(0);} }
+    @keyframes fadeSlideUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+    @media (max-width: 600px) { .greeting{padding:28px 22px;} .info-pill{flex:1 1 100%;} }
+  </style>
+</head>
+<body>
+  <div class="bg-glow"></div>
+  <div class="particles" id="particles"></div>
+  <main>
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Hoc ky 2025.2 &nbsp;·&nbsp; HUST
+    </div>
+    <h1 class="hero-title">XIN CHAO IT4409! 👋</h1>
+    <p class="hero-subtitle">
+      Cong nghe Web &amp; Server &nbsp;—&nbsp;
+      <span>noi bug sinh soi, deadline can ke</span> 😅
+    </p>
+    <div class="meme-card" id="meme-card">
+      <div class="meme-img-wrap">
+        <img src="./meme.jpg" alt="Meme sinh vien HUST hoang loan voi IT4409" />
+        <div class="meme-caption">
+          "An lun roi... mon Web &amp; Server ac mong that su 💀"
+        </div>
+      </div>
+    </div>
+    <div class="greeting" id="greeting">
+      <h2>🎉 Chao mung den voi IT4409!</h2>
+      <p>
+        Hey cac ban! Chao mung den voi hoc phan <strong>IT4409 – Cong nghe Web va Server</strong>.
+        Day la mon hoc ma ban se hoc duoc rat nhieu thu hay ho — tu HTML/CSS/JS den backend, database,
+        va ca nhung luc <em>ngoi debug tu 11 gio dem den 3 gio sang</em> chi vi thieu mot dau cham phay. 😭
+      </p>
+      <p>
+        Nhung dung lo! Ca lop se cung nhau vuot qua. Hom nay bat dau, ngay mai <strong>full-stack developer</strong>.
+        (It nhat la theo CV thoi 😂)
+      </p>
+      <p>
+        Chuc cac ban <em>code it bug</em>, server khong crash, va deadline luon duoc extend.
+        Let's go! 🚀🔥
+      </p>
+    </div>
+    <div class="info-row">
+      <div class="info-pill">
+        <div class="info-icon">📚</div>
+        <div class="info-content">
+          <strong>Hoc phan</strong>
+          <span>IT4409 – Web &amp; Server Tech</span>
+        </div>
+      </div>
+      <div class="info-pill">
+        <div class="info-icon">🏫</div>
+        <div class="info-content">
+          <strong>Truong</strong>
+          <span>Dai hoc Bach Khoa Ha Noi</span>
+        </div>
+      </div>
+      <div class="info-pill">
+        <div class="info-icon">💻</div>
+        <div class="info-content">
+          <strong>Stack</strong>
+          <span>HTML · CSS · JS · PHP · Node.js</span>
+        </div>
+      </div>
+      <div class="info-pill">
+        <div class="info-icon">☕</div>
+        <div class="info-content">
+          <strong>Nhien lieu chinh thuc</strong>
+          <span>Ca phe &amp; mi tom thuc khuya</span>
+        </div>
+      </div>
+    </div>
+    <div class="quote-grid">
+      <div class="quote-card pink">
+        <span class="quote-emoji">🐛</span>
+        <p class="quote-text"><strong>"It's not a bug,"</strong> it's an undocumented feature. Thay se hieu... chac vay.</p>
+      </div>
+      <div class="quote-card blue">
+        <span class="quote-emoji">🌐</span>
+        <p class="quote-text">Buoc 1: localhost hoat dong. Buoc 2: deploy len server. Buoc 3: <strong>tat ca vo tan</strong>. 💥</p>
+      </div>
+      <div class="quote-card green">
+        <span class="quote-emoji">😴</span>
+        <p class="quote-text">Khi thay hoi "ai chua lam bai?" — <strong>ca lop gia vo ngu</strong> dong loat.</p>
+      </div>
+      <div class="quote-card purple">
+        <span class="quote-emoji">🔥</span>
+        <p class="quote-text">Stack Overflow la <strong>nguoi thay thu hai</strong>. Nguoi thay dau tien cung hay hoi Stack Overflow.</p>
+      </div>
+    </div>
+    <div class="cta-wrap">
+      <button class="cta-btn" id="cta-btn" onclick="triggerConfetti()">
+        🚀 BAT DAU THOI NAO!
+      </button>
+    </div>
+    <footer class="footer">
+      Made with ❤️ &amp; ☕ &amp; vo so bug &nbsp;·&nbsp; IT4409 2025.2<br/>
+      <a href="https://hust.edu.vn" target="_blank" rel="noopener">Dai hoc Bach Khoa Ha Noi</a>
+    </footer>
+  </main>
+  <script>
+    (function () {
+      var colors = ['#00d4ff','#ff2d78','#39ff14','#ffe600','#bf5fff'];
+      var container = document.getElementById('particles');
+      for (var i = 0; i < 40; i++) {
+        var p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText =
+          'left:' + Math.random()*100 + '%;' +
+          'bottom:-10px;' +
+          'width:' + (Math.random()*6+3) + 'px;' +
+          'height:' + (Math.random()*6+3) + 'px;' +
+          'background:' + colors[Math.floor(Math.random()*colors.length)] + ';' +
+          'box-shadow:0 0 8px ' + colors[Math.floor(Math.random()*colors.length)] + ';' +
+          'animation-duration:' + (Math.random()*12+8) + 's;' +
+          'animation-delay:' + (Math.random()*8) + 's;';
+        container.appendChild(p);
+      }
+    })();
+
+    var style = document.createElement('style');
+    style.textContent = '@keyframes confettiFall { from { transform: translateY(0) rotate(0deg); opacity: 1; } to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }';
+    document.head.appendChild(style);
+
+    function triggerConfetti() {
+      var emojis = ['🎉','🚀','🔥','💻','🐛','⚡','✨','🎊','😂','💀'];
+      for (var i = 0; i < 30; i++) {
+        (function(idx) {
+          setTimeout(function() {
+            var el = document.createElement('div');
+            el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+            el.style.cssText =
+              'position:fixed;' +
+              'left:' + Math.random()*100 + 'vw;' +
+              'top:-40px;' +
+              'font-size:' + (Math.random()*24+18) + 'px;' +
+              'pointer-events:none;' +
+              'z-index:9999;' +
+              'animation:confettiFall ' + (Math.random()*2+1.5) + 's ease-in forwards;';
+            document.body.appendChild(el);
+            el.addEventListener('animationend', function() { el.remove(); });
+          }, idx * 60);
+        })(i);
+      }
+    }
+  </script>
+</body>
+</html>
