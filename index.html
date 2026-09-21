@@ -1,376 +1,850 @@
 ﻿<!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Xin Chao IT4409 - Web &amp; Server Technologies</title>
-  <meta name="description" content="Trang chao hoi sieu bua danh cho hoc phan IT4409 - Cong nghe Web va Server, HUST." />
+  <title>IT4409 — Ba Khi Ayanokoji</title>
+  <meta name="description" content="Hoc phan IT4409 Web va Server — Khong ai co the thoat khoi ke hoach cua toi." />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Be+Vietnam+Pro:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Inter:wght@300;400;500;600&display=swap"
+    rel="stylesheet" />
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root {
-      --bg-dark: #0d0d1a;
-      --bg-card: rgba(255,255,255,0.04);
-      --neon-blue: #00d4ff;
-      --neon-pink: #ff2d78;
-      --neon-green: #39ff14;
-      --neon-yellow: #ffe600;
-      --neon-purple: #bf5fff;
-      --text: #f0f0ff;
-      --muted: #9090b0;
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
-    html { scroll-behavior: smooth; }
+
+    :root {
+      --black: #080808;
+      --surface: #0f0f0f;
+      --card: rgba(255, 255, 255, 0.03);
+      --border: rgba(255, 255, 255, 0.07);
+      --gold: #c9a84c;
+      --gold-lt: #e8c97a;
+      --gold-dk: #8a6820;
+      --crimson: #8b1a1a;
+      --crimson-lt: #c0392b;
+      --text: #e8e6e0;
+      --muted: #6a6860;
+      --dim: #2a2820;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
-      background: var(--bg-dark);
+      background: var(--black);
       color: var(--text);
-      font-family: "Be Vietnam Pro", sans-serif;
+      font-family: "Inter", sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
       position: relative;
     }
-    .bg-glow {
-      position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 80% 60% at 20% 10%, rgba(0,212,255,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 60% 50% at 80% 90%, rgba(255,45,120,0.12) 0%, transparent 60%),
-        radial-gradient(ellipse 50% 40% at 50% 50%, rgba(63,30,120,0.25) 0%, transparent 70%);
-      animation: bgPulse 8s ease-in-out infinite alternate;
-    }
-    @keyframes bgPulse { from{opacity:0.7;} to{opacity:1;} }
-    .particles { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-    .particle {
-      position: absolute;
-      border-radius: 50%;
-      opacity: 0;
-      animation: floatUp linear infinite;
-    }
-    @keyframes floatUp {
-      0%   { opacity: 0; transform: translateY(0) scale(0.5); }
-      10%  { opacity: 1; }
-      90%  { opacity: 1; }
-      100% { opacity: 0; transform: translateY(-100vh) scale(1.2); }
-    }
-    main {
-      position: relative; z-index: 1;
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 40px 20px 80px;
-      display: flex; flex-direction: column; align-items: center; gap: 36px;
-    }
-    .badge {
-      display: inline-flex; align-items: center; gap: 8px;
-      background: rgba(0,212,255,0.1);
-      border: 1px solid rgba(0,212,255,0.35);
-      border-radius: 99px;
-      padding: 6px 18px;
-      font-size: 0.8rem; font-weight: 700; letter-spacing: 1.5px;
-      color: var(--neon-blue);
-      text-transform: uppercase;
-      animation: fadeSlideDown 0.6s ease both;
-    }
-    .badge-dot {
-      width: 7px; height: 7px; border-radius: 50%;
-      background: var(--neon-green);
-      box-shadow: 0 0 8px var(--neon-green);
-      animation: blink 1.4s ease-in-out infinite;
-    }
-    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.2;} }
-    .hero-title {
-      font-family: "Bangers", cursive;
-      font-size: clamp(3rem, 10vw, 6rem);
-      line-height: 1;
-      text-align: center;
-      letter-spacing: 2px;
-      animation: fadeSlideDown 0.7s 0.1s ease both;
-      background: linear-gradient(135deg, var(--neon-blue) 0%, var(--neon-pink) 50%, var(--neon-yellow) 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      filter: drop-shadow(0 0 30px rgba(0,212,255,0.4));
-    }
-    .hero-subtitle {
-      text-align: center;
-      font-size: clamp(1rem, 3vw, 1.3rem);
-      color: var(--muted);
-      font-weight: 600;
-      animation: fadeSlideDown 0.7s 0.2s ease both;
-    }
-    .hero-subtitle span { color: var(--neon-pink); }
-    .meme-card {
-      width: 100%;
-      background: var(--bg-card);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      overflow: hidden;
-      backdrop-filter: blur(12px);
-      box-shadow: 0 0 0 1px rgba(0,212,255,0.1), 0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.07);
-      animation: fadeSlideUp 0.8s 0.3s ease both;
-      transition: transform 0.4s ease, box-shadow 0.4s ease;
-    }
-    .meme-card:hover {
-      transform: translateY(-6px) scale(1.01);
-      box-shadow: 0 0 0 1px rgba(0,212,255,0.3), 0 30px 80px rgba(0,0,0,0.7), 0 0 60px rgba(0,212,255,0.12), inset 0 1px 0 rgba(255,255,255,0.1);
-    }
-    .meme-img-wrap { position: relative; overflow: hidden; }
-    .meme-img-wrap img { width: 100%; display: block; transition: transform 0.5s ease; }
-    .meme-card:hover .meme-img-wrap img { transform: scale(1.03); }
-    .meme-caption {
-      position: absolute;
-      bottom: 0; left: 0; right: 0;
-      padding: 16px 20px;
-      background: linear-gradient(to top, rgba(0,0,0,0.85) 0%, transparent 100%);
-      font-family: "Bangers", cursive;
-      font-size: clamp(1rem, 3vw, 1.4rem);
-      letter-spacing: 1px;
-      color: #fff;
-      text-shadow: 0 2px 10px rgba(0,0,0,0.8), 0 0 20px var(--neon-yellow);
-    }
-    .greeting {
-      width: 100%;
-      background: var(--bg-card);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 24px;
-      padding: 40px 36px;
-      backdrop-filter: blur(12px);
-      animation: fadeSlideUp 0.8s 0.45s ease both;
-      position: relative; overflow: hidden;
-    }
-    .greeting::before {
+
+    /* Scan-line overlay */
+    body::before {
       content: "";
-      position: absolute; top: 0; left: 0; right: 0; height: 2px;
-      background: linear-gradient(90deg, var(--neon-blue), var(--neon-pink), var(--neon-purple));
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background: repeating-linear-gradient(0deg,
+          transparent,
+          transparent 2px,
+          rgba(0, 0, 0, 0.08) 2px,
+          rgba(0, 0, 0, 0.08) 4px);
     }
-    .greeting h2 {
-      font-family: "Bangers", cursive;
-      font-size: clamp(1.6rem, 5vw, 2.4rem);
+
+    /* Ambient glow */
+    .bg-ambient {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background:
+        radial-gradient(ellipse 50% 40% at 50% 0%, rgba(139, 26, 26, 0.18) 0%, transparent 70%),
+        radial-gradient(ellipse 80% 60% at 80% 100%, rgba(201, 168, 76, 0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 20% 60%, rgba(139, 26, 26, 0.07) 0%, transparent 60%);
+      animation: ambientShift 12s ease-in-out infinite alternate;
+    }
+
+    @keyframes ambientShift {
+      from {
+        opacity: 0.8;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    /* Floating dust particles */
+    .dust {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+
+    .dust-p {
+      position: absolute;
+      width: 2px;
+      height: 2px;
+      border-radius: 50%;
+      background: var(--gold);
+      opacity: 0;
+      animation: dustFloat linear infinite;
+    }
+
+    @keyframes dustFloat {
+      0% {
+        opacity: 0;
+        transform: translateY(100vh) translateX(0);
+      }
+
+      10% {
+        opacity: 0.6;
+      }
+
+      90% {
+        opacity: 0.3;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(-20px) translateX(20px);
+      }
+    }
+
+    /* Layout */
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 60px 24px 100px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 48px;
+    }
+
+    /* ── TOP TAG ── */
+    .class-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      border: 1px solid var(--gold-dk);
+      border-radius: 2px;
+      padding: 8px 24px;
+      font-family: "Cinzel", serif;
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      color: var(--gold);
+      text-transform: uppercase;
+      animation: fadeIn 1s ease both;
+      position: relative;
+    }
+
+    .class-tag::before,
+    .class-tag::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 30px;
+      height: 1px;
+      background: var(--gold-dk);
+    }
+
+    .class-tag::before {
+      right: 100%;
+      margin-right: 12px;
+    }
+
+    .class-tag::after {
+      left: 100%;
+      margin-left: 12px;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      animation: fadeIn 1s 0.15s ease both;
+    }
+
+    .hero-eyebrow {
+      font-size: 0.72rem;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 18px;
+    }
+
+    .hero-title {
+      font-family: "Cinzel", serif;
+      font-size: clamp(2.6rem, 8vw, 5.5rem);
+      font-weight: 900;
+      line-height: 1.05;
+      letter-spacing: 3px;
+      color: var(--gold-lt);
+      text-shadow:
+        0 0 40px rgba(201, 168, 76, 0.3),
+        0 0 80px rgba(201, 168, 76, 0.12);
+      position: relative;
+    }
+
+    .hero-title .slash {
+      color: var(--crimson-lt);
+      text-shadow: 0 0 30px rgba(192, 57, 43, 0.5);
+    }
+
+    .hero-sub {
+      margin-top: 16px;
+      font-size: 1rem;
+      color: var(--muted);
+      font-weight: 300;
       letter-spacing: 1px;
-      margin-bottom: 20px;
-      color: var(--neon-yellow);
-      text-shadow: 0 0 20px rgba(255,230,0,0.4);
     }
-    .greeting p { font-size: 1.05rem; line-height: 1.85; color: #c8c8e0; margin-bottom: 14px; }
-    .greeting p:last-child { margin-bottom: 0; }
-    .greeting strong { color: var(--neon-blue); }
-    .greeting em { color: var(--neon-pink); font-style: normal; font-weight: 700; }
-    .info-row {
-      display: flex; flex-wrap: wrap; gap: 12px;
+
+    .hero-sub em {
+      color: var(--gold);
+      font-style: normal;
+      font-weight: 500;
+    }
+
+    /* ── DIVIDER ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
       width: 100%;
-      animation: fadeSlideUp 0.8s 0.55s ease both;
+      animation: fadeIn 1s 0.25s ease both;
     }
-    .info-pill {
-      flex: 1 1 calc(50% - 6px);
-      min-width: 200px;
-      background: var(--bg-card);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 20px 24px;
-      backdrop-filter: blur(12px);
-      display: flex; align-items: flex-start; gap: 14px;
-      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+
+    .divider-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
-    .info-pill:hover { border-color: rgba(0,212,255,0.4); box-shadow: 0 0 30px rgba(0,212,255,0.12); transform: translateY(-3px); }
-    .info-icon { font-size: 1.8rem; flex-shrink: 0; line-height: 1; }
-    .info-content strong { display: block; font-size: 0.75rem; font-weight: 700; letter-spacing: 1.2px; text-transform: uppercase; color: var(--neon-blue); margin-bottom: 4px; }
-    .info-content span { font-size: 0.95rem; font-weight: 600; color: var(--text); }
-    .quote-grid {
+
+    .divider-icon {
+      color: var(--gold-dk);
+      font-size: 0.9rem;
+      letter-spacing: 3px;
+    }
+
+    /* ── IMAGE CARD ── */
+    .image-card {
       width: 100%;
+      border: 1px solid rgba(201, 168, 76, 0.2);
+      border-radius: 4px;
+      overflow: hidden;
+      position: relative;
+      animation: fadeIn 1s 0.3s ease both;
+      transition: border-color 0.5s ease, box-shadow 0.5s ease;
+      box-shadow: 0 0 0 1px rgba(139, 26, 26, 0.15), 0 30px 80px rgba(0, 0, 0, 0.8);
+    }
+
+    .image-card:hover {
+      border-color: rgba(201, 168, 76, 0.5);
+      box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.2), 0 0 60px rgba(201, 168, 76, 0.08), 0 30px 80px rgba(0, 0, 0, 0.9);
+    }
+
+    .image-card img {
+      width: 100%;
+      display: block;
+      transition: transform 0.8s ease, filter 0.5s ease;
+      filter: brightness(0.9) contrast(1.05);
+    }
+
+    .image-card:hover img {
+      transform: scale(1.02);
+      filter: brightness(1) contrast(1.08);
+    }
+
+    /* Corner decorations */
+    .corner {
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-color: var(--gold);
+      border-style: solid;
+    }
+
+    .corner.tl {
+      top: 8px;
+      left: 8px;
+      border-width: 2px 0 0 2px;
+    }
+
+    .corner.tr {
+      top: 8px;
+      right: 8px;
+      border-width: 2px 2px 0 0;
+    }
+
+    .corner.bl {
+      bottom: 8px;
+      left: 8px;
+      border-width: 0 0 2px 2px;
+    }
+
+    .corner.br {
+      bottom: 8px;
+      right: 8px;
+      border-width: 0 2px 2px 0;
+    }
+
+    .image-label {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 24px 28px 20px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, transparent 100%);
+      font-family: "Cinzel", serif;
+      font-size: clamp(0.85rem, 2.5vw, 1.1rem);
+      color: var(--gold-lt);
+      letter-spacing: 1px;
+      text-shadow: 0 0 20px rgba(201, 168, 76, 0.5);
+    }
+
+    /* ── MAIN QUOTE ── */
+    .main-quote {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--gold);
+      padding: 36px 40px;
+      position: relative;
+      animation: fadeIn 1s 0.4s ease both;
+    }
+
+    .main-quote::before {
+      content: "\u201C";
+      position: absolute;
+      top: -10px;
+      left: 20px;
+      font-family: "Cinzel", serif;
+      font-size: 5rem;
+      color: var(--gold-dk);
+      line-height: 1;
+    }
+
+    .main-quote p {
+      font-size: 1.05rem;
+      line-height: 1.9;
+      color: #c8c6be;
+      padding-top: 20px;
+    }
+
+    .main-quote strong {
+      color: var(--gold-lt);
+      font-weight: 600;
+    }
+
+    .main-quote em {
+      color: var(--crimson-lt);
+      font-style: normal;
+    }
+
+    .quote-attr {
+      margin-top: 20px;
+      font-family: "Cinzel", serif;
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .quote-attr span {
+      color: var(--gold-dk);
+    }
+
+    /* ── STATS ROW ── */
+    .stats-row {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 14px;
-      animation: fadeSlideUp 0.8s 0.65s ease both;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      width: 100%;
+      background: var(--border);
+      border: 1px solid var(--border);
+      animation: fadeIn 1s 0.5s ease both;
     }
-    .quote-card {
-      background: var(--bg-card);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 16px;
-      padding: 22px 20px;
-      backdrop-filter: blur(12px);
-      transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+
+    .stat {
+      background: var(--surface);
+      padding: 28px 20px;
+      text-align: center;
+      transition: background 0.3s ease;
+    }
+
+    .stat:hover {
+      background: rgba(201, 168, 76, 0.04);
+    }
+
+    .stat-num {
+      font-family: "Cinzel", serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .stat-label {
+      font-size: 0.68rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* ── PLAN CARDS ── */
+    .plan-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1px;
+      width: 100%;
+      background: var(--border);
+      border: 1px solid var(--border);
+      animation: fadeIn 1s 0.6s ease both;
+    }
+
+    .plan-card {
+      background: var(--surface);
+      padding: 30px 28px;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.3s ease;
       cursor: default;
     }
-    .quote-card:hover { transform: translateY(-4px); }
-    .quote-card.pink { --accent: var(--neon-pink); }
-    .quote-card.blue { --accent: var(--neon-blue); }
-    .quote-card.green { --accent: var(--neon-green); }
-    .quote-card.purple { --accent: var(--neon-purple); }
-    .quote-card:hover { border-color: var(--accent); box-shadow: 0 0 30px color-mix(in srgb, var(--accent) 20%, transparent); }
-    .quote-emoji { font-size: 2rem; display: block; margin-bottom: 10px; }
-    .quote-text { font-size: 0.92rem; line-height: 1.6; color: #b0b0d0; }
-    .quote-text strong { color: var(--accent); }
-    .cta-wrap { animation: fadeSlideUp 0.8s 0.75s ease both; }
-    .cta-btn {
-      display: inline-flex; align-items: center; gap: 10px;
-      background: linear-gradient(135deg, var(--neon-blue), var(--neon-pink));
-      color: #fff;
-      font-family: "Bangers", cursive;
-      font-size: 1.4rem;
-      letter-spacing: 2px;
-      padding: 16px 40px;
-      border-radius: 99px;
-      text-decoration: none;
-      border: none; cursor: pointer;
-      box-shadow: 0 8px 30px rgba(0,212,255,0.3);
-      transition: transform 0.25s ease, box-shadow 0.25s ease;
-      animation: pulse 2.5s ease-in-out infinite;
+
+    .plan-card::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--gold-dk), transparent);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
     }
-    @keyframes pulse {
-      0%,100% { box-shadow: 0 8px 30px rgba(0,212,255,0.3), 0 0 0 0 rgba(0,212,255,0.4); }
-      50%      { box-shadow: 0 8px 40px rgba(255,45,120,0.4), 0 0 0 12px rgba(0,212,255,0); }
+
+    .plan-card:hover {
+      background: rgba(201, 168, 76, 0.03);
     }
-    .cta-btn:hover { transform: scale(1.06) translateY(-2px); }
+
+    .plan-card:hover::after {
+      transform: scaleX(1);
+    }
+
+    .plan-num {
+      font-family: "Cinzel", serif;
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      color: var(--gold-dk);
+      margin-bottom: 14px;
+      text-transform: uppercase;
+    }
+
+    .plan-text {
+      font-size: 0.9rem;
+      line-height: 1.7;
+      color: #9a9890;
+    }
+
+    .plan-text strong {
+      color: var(--gold-lt);
+    }
+
+    .plan-text em {
+      color: var(--crimson-lt);
+      font-style: normal;
+    }
+
+    /* ── FINAL QUOTE ── */
+    .final-quote {
+      width: 100%;
+      text-align: center;
+      padding: 40px 24px;
+      position: relative;
+      animation: fadeIn 1s 0.7s ease both;
+    }
+
+    .final-quote p {
+      font-family: "Cinzel", serif;
+      font-size: clamp(1rem, 3vw, 1.5rem);
+      color: var(--gold);
+      letter-spacing: 1px;
+      line-height: 1.7;
+      text-shadow: 0 0 30px rgba(201, 168, 76, 0.2);
+    }
+
+    .final-quote .sub {
+      margin-top: 16px;
+      font-family: "Inter", sans-serif;
+      font-size: 0.8rem;
+      letter-spacing: 3px;
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* ── SIGNATURE BUTTON ── */
+    .sig-wrap {
+      animation: fadeIn 1s 0.8s ease both;
+    }
+
+    .sig-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: transparent;
+      border: 1px solid var(--gold-dk);
+      color: var(--gold);
+      font-family: "Cinzel", serif;
+      font-size: 0.85rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      padding: 16px 48px;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: color 0.4s ease, border-color 0.4s ease;
+    }
+
+    .sig-btn::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+      z-index: 0;
+    }
+
+    .sig-btn:hover {
+      color: #000;
+      border-color: var(--gold);
+    }
+
+    .sig-btn:hover::before {
+      transform: scaleX(1);
+    }
+
+    .sig-btn span {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ── FOOTER ── */
     .footer {
-      text-align: center; font-size: 0.82rem; color: var(--muted);
-      animation: fadeSlideUp 0.8s 0.85s ease both; line-height: 1.7;
+      text-align: center;
+      font-size: 0.7rem;
+      letter-spacing: 2px;
+      color: var(--muted);
+      text-transform: uppercase;
+      animation: fadeIn 1s 0.9s ease both;
+      line-height: 2;
     }
-    .footer a { color: var(--neon-blue); text-decoration: none; }
-    .footer a:hover { text-decoration: underline; }
-    @keyframes fadeSlideDown { from{opacity:0;transform:translateY(-20px);} to{opacity:1;transform:translateY(0);} }
-    @keyframes fadeSlideUp { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
-    @media (max-width: 600px) { .greeting{padding:28px 22px;} .info-pill{flex:1 1 100%;} }
+
+    .footer a {
+      color: var(--gold-dk);
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    .footer a:hover {
+      color: var(--gold);
+    }
+
+    /* ── ANIMATIONS ── */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(16px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ── MODAL OVERLAY ── */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      background: rgba(0, 0, 0, 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      transition: background 0.5s ease;
+    }
+
+    .overlay.active {
+      background: rgba(0, 0, 0, 0.92);
+      pointer-events: all;
+    }
+
+    .modal {
+      max-width: 500px;
+      width: 90%;
+      border: 1px solid var(--gold-dk);
+      background: var(--surface);
+      padding: 48px 40px;
+      text-align: center;
+      transform: scale(0.9) translateY(20px);
+      opacity: 0;
+      transition: transform 0.5s ease, opacity 0.5s ease;
+      position: relative;
+    }
+
+    .overlay.active .modal {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    .modal h3 {
+      font-family: "Cinzel", serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      margin-bottom: 20px;
+      letter-spacing: 2px;
+    }
+
+    .modal p {
+      font-size: 0.9rem;
+      line-height: 1.8;
+      color: var(--muted);
+    }
+
+    .modal-close {
+      margin-top: 32px;
+      display: inline-block;
+      font-family: "Cinzel", serif;
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      color: var(--gold-dk);
+      cursor: pointer;
+      text-transform: uppercase;
+      border-bottom: 1px solid var(--gold-dk);
+      padding-bottom: 2px;
+      transition: color 0.3s, border-color 0.3s;
+    }
+
+    .modal-close:hover {
+      color: var(--gold);
+      border-color: var(--gold);
+    }
+
+    @media (max-width: 640px) {
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .main-quote {
+        padding: 28px 24px;
+      }
+
+      .class-tag::before,
+      .class-tag::after {
+        display: none;
+      }
+    }
   </style>
 </head>
+
 <body>
-  <div class="bg-glow"></div>
-  <div class="particles" id="particles"></div>
+  <div class="bg-ambient"></div>
+  <div class="dust" id="dust"></div>
+
+  <div class="overlay" id="overlay" onclick="closeModal()">
+    <div class="modal">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+      <h3>Da dieu phoi xong.</h3>
+      <p>Moi thu dang dien ra dung theo ke hoach.<br />Ban chi la mot bien so trong phep tinh cua toi.<br />IT4409 —
+        khong co gi la kho ca.</p>
+      <div class="modal-close" onclick="closeModal()">— dong lai —</div>
+    </div>
+  </div>
+
   <main>
-    <div class="badge">
-      <span class="badge-dot"></span>
-      Hoc ky 2025.2 &nbsp;·&nbsp; HUST
-    </div>
-    <h1 class="hero-title">XIN CHAO IT4409! 👋</h1>
-    <p class="hero-subtitle">
-      Cong nghe Web &amp; Server &nbsp;—&nbsp;
-      <span>noi bug sinh soi, deadline can ke</span> 😅
-    </p>
-    <div class="meme-card" id="meme-card">
-      <div class="meme-img-wrap">
-        <img src="./meme.jpg" alt="Meme sinh vien HUST hoang loan voi IT4409" />
-        <div class="meme-caption">
-          "An lun roi... mon Web &amp; Server ac mong that su 💀"
-        </div>
-      </div>
-    </div>
-    <div class="greeting" id="greeting">
-      <h2>🎉 Chao mung den voi IT4409!</h2>
-      <p>
-        Hey cac ban! Chao mung den voi hoc phan <strong>IT4409 – Cong nghe Web va Server</strong>.
-        Day la mon hoc ma ban se hoc duoc rat nhieu thu hay ho — tu HTML/CSS/JS den backend, database,
-        va ca nhung luc <em>ngoi debug tu 11 gio dem den 3 gio sang</em> chi vi thieu mot dau cham phay. 😭
-      </p>
-      <p>
-        Nhung dung lo! Ca lop se cung nhau vuot qua. Hom nay bat dau, ngay mai <strong>full-stack developer</strong>.
-        (It nhat la theo CV thoi 😂)
-      </p>
-      <p>
-        Chuc cac ban <em>code it bug</em>, server khong crash, va deadline luon duoc extend.
-        Let's go! 🚀🔥
+    <!-- Top tag -->
+    <div class="class-tag">IT4409 &nbsp;·&nbsp; Class A</div>
+
+    <!-- Hero -->
+    <div class="hero">
+      <p class="hero-eyebrow">Advanced Institute of Technology · HUST</p>
+      <h1 class="hero-title">
+        BA KHI<br /><span class="slash">AYANOKOJI</span>
+      </h1>
+      <p class="hero-sub">
+        Hoc phan IT4409 — <em>Cong nghe Web va Server</em><br />
+        Khoa hoc 2025.2
       </p>
     </div>
-    <div class="info-row">
-      <div class="info-pill">
-        <div class="info-icon">📚</div>
-        <div class="info-content">
-          <strong>Hoc phan</strong>
-          <span>IT4409 – Web &amp; Server Tech</span>
-        </div>
-      </div>
-      <div class="info-pill">
-        <div class="info-icon">🏫</div>
-        <div class="info-content">
-          <strong>Truong</strong>
-          <span>Dai hoc Bach Khoa Ha Noi</span>
-        </div>
-      </div>
-      <div class="info-pill">
-        <div class="info-icon">💻</div>
-        <div class="info-content">
-          <strong>Stack</strong>
-          <span>HTML · CSS · JS · PHP · Node.js</span>
-        </div>
-      </div>
-      <div class="info-pill">
-        <div class="info-icon">☕</div>
-        <div class="info-content">
-          <strong>Nhien lieu chinh thuc</strong>
-          <span>Ca phe &amp; mi tom thuc khuya</span>
-        </div>
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-icon">◆</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Image -->
+    <div class="image-card" id="main-image">
+      <div class="corner tl"></div>
+      <div class="corner tr"></div>
+      <div class="corner bl"></div>
+      <div class="corner br"></div>
+      <img src="./meme.jpg" alt="Ayanokoji Kiyotaka nhin man hinh IT4409 Web and Server" />
+      <div class="image-label">
+        "Everyone in this class will serve as my pawn... including the server."
       </div>
     </div>
-    <div class="quote-grid">
-      <div class="quote-card pink">
-        <span class="quote-emoji">🐛</span>
-        <p class="quote-text"><strong>"It's not a bug,"</strong> it's an undocumented feature. Thay se hieu... chac vay.</p>
+
+    <!-- Main Quote -->
+    <div class="main-quote">
+      <p>
+        Xin chao cac ban, chao mung den voi hoc phan <strong>IT4409 – Web &amp; Server Technologies</strong>.
+        Toi da tinh toan moi thu tu truoc: ai se hieu nhanh, ai se submit phut cuoi,
+        ai se google <em>"how to center a div"</em> luc 2 gio sang.
+        <br /><br />
+        Day khong phai mon hoc binh thuong. Day la <strong>phep thu cua ban</strong>.
+        Bug khong phai loi cua may tinh — bug la loi cua tu duy chua du sau.
+        Nhung dung lo, <em>toi da du sau de tinh ca phan cua cac ban</em>.
+      </p>
+      <div class="quote-attr">— <span>Ayanokoji Kiyotaka</span> · IT4409 · 2025.2</div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat">
+        <div class="stat-num">100</div>
+        <div class="stat-label">Diem tu chon</div>
       </div>
-      <div class="quote-card blue">
-        <span class="quote-emoji">🌐</span>
-        <p class="quote-text">Buoc 1: localhost hoat dong. Buoc 2: deploy len server. Buoc 3: <strong>tat ca vo tan</strong>. 💥</p>
+      <div class="stat">
+        <div class="stat-num">0</div>
+        <div class="stat-label">Cam xuc</div>
       </div>
-      <div class="quote-card green">
-        <span class="quote-emoji">😴</span>
-        <p class="quote-text">Khi thay hoi "ai chua lam bai?" — <strong>ca lop gia vo ngu</strong> dong loat.</p>
+      <div class="stat">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Ke hoach</div>
       </div>
-      <div class="quote-card purple">
-        <span class="quote-emoji">🔥</span>
-        <p class="quote-text">Stack Overflow la <strong>nguoi thay thu hai</strong>. Nguoi thay dau tien cung hay hoi Stack Overflow.</p>
+      <div class="stat">
+        <div class="stat-num">404</div>
+        <div class="stat-label">Bug cua nguoi khac</div>
       </div>
     </div>
-    <div class="cta-wrap">
-      <button class="cta-btn" id="cta-btn" onclick="triggerConfetti()">
-        🚀 BAT DAU THOI NAO!
+
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-icon">◆</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <!-- Plan Cards -->
+    <div class="plan-grid">
+      <div class="plan-card">
+        <div class="plan-num">Chuyen de 01</div>
+        <p class="plan-text">
+          <strong>HTML la nen tang.</strong> Nguoi yeu nen tang se bi lung lay boi bat ky con gio nao.
+          Hoc chu, hoc ky — hoac toi se tinh cho ban.
+        </p>
+      </div>
+      <div class="plan-card">
+        <div class="plan-num">Chuyen de 02</div>
+        <p class="plan-text">
+          <strong>localhost != production.</strong>
+          Nguoi ngo ngoc tin rang may cu chay la xong.
+          <em>Server khong bao gio tha thu cho su chu quan.</em>
+        </p>
+      </div>
+      <div class="plan-card">
+        <div class="plan-num">Chuyen de 03</div>
+        <p class="plan-text">
+          Deadline chi la mot bien so. <strong>Nguoi quan trong la nguoi hoan thanh,</strong>
+          con nguoi thong minh la nguoi hoan thanh som — roi ngu trong khi cac ban debug.
+        </p>
+      </div>
+      <div class="plan-card">
+        <div class="plan-num">Chuyen de 04</div>
+        <p class="plan-text">
+          Stack Overflow khong phai diem yeu. <em>Khong biet dung cong cu</em> moi la diem yeu.
+          <strong>Toi dung ca hai.</strong>
+        </p>
+      </div>
+    </div>
+
+    <!-- Final Quote -->
+    <div class="final-quote">
+      <p>"Tat ca moi nguoi trong lop nay deu la quan co cua toi.<br />Ke ca thanh vien nhom chua push code len GitHub."
+      </p>
+      <div class="sub">— Hoc ky 2025.2 · IT4409 · HUST —</div>
+    </div>
+
+    <!-- Button -->
+    <div class="sig-wrap">
+      <button class="sig-btn" id="proceed-btn" onclick="openModal()">
+        <span>Chap nhan ke hoach</span>
       </button>
     </div>
+
+    <!-- Footer -->
     <footer class="footer">
-      Made with ❤️ &amp; ☕ &amp; vo so bug &nbsp;·&nbsp; IT4409 2025.2<br/>
+      IT4409 · Web &amp; Server Technologies · 2025.2<br />
       <a href="https://hust.edu.vn" target="_blank" rel="noopener">Dai hoc Bach Khoa Ha Noi</a>
     </footer>
   </main>
+
   <script>
+    /* Dust particles */
     (function () {
-      var colors = ['#00d4ff','#ff2d78','#39ff14','#ffe600','#bf5fff'];
-      var container = document.getElementById('particles');
-      for (var i = 0; i < 40; i++) {
-        var p = document.createElement('div');
-        p.className = 'particle';
+      var c = document.getElementById("dust");
+      for (var i = 0; i < 25; i++) {
+        var p = document.createElement("div");
+        p.className = "dust-p";
         p.style.cssText =
-          'left:' + Math.random()*100 + '%;' +
-          'bottom:-10px;' +
-          'width:' + (Math.random()*6+3) + 'px;' +
-          'height:' + (Math.random()*6+3) + 'px;' +
-          'background:' + colors[Math.floor(Math.random()*colors.length)] + ';' +
-          'box-shadow:0 0 8px ' + colors[Math.floor(Math.random()*colors.length)] + ';' +
-          'animation-duration:' + (Math.random()*12+8) + 's;' +
-          'animation-delay:' + (Math.random()*8) + 's;';
-        container.appendChild(p);
+          "left:" + Math.random() * 100 + "%;" +
+          "animation-duration:" + (Math.random() * 20 + 15) + "s;" +
+          "animation-delay:" + (Math.random() * 15) + "s;" +
+          "opacity:" + (Math.random() * 0.4 + 0.1) + ";";
+        c.appendChild(p);
       }
     })();
 
-    var style = document.createElement('style');
-    style.textContent = '@keyframes confettiFall { from { transform: translateY(0) rotate(0deg); opacity: 1; } to { transform: translateY(110vh) rotate(720deg); opacity: 0; } }';
-    document.head.appendChild(style);
-
-    function triggerConfetti() {
-      var emojis = ['🎉','🚀','🔥','💻','🐛','⚡','✨','🎊','😂','💀'];
-      for (var i = 0; i < 30; i++) {
-        (function(idx) {
-          setTimeout(function() {
-            var el = document.createElement('div');
-            el.textContent = emojis[Math.floor(Math.random()*emojis.length)];
-            el.style.cssText =
-              'position:fixed;' +
-              'left:' + Math.random()*100 + 'vw;' +
-              'top:-40px;' +
-              'font-size:' + (Math.random()*24+18) + 'px;' +
-              'pointer-events:none;' +
-              'z-index:9999;' +
-              'animation:confettiFall ' + (Math.random()*2+1.5) + 's ease-in forwards;';
-            document.body.appendChild(el);
-            el.addEventListener('animationend', function() { el.remove(); });
-          }, idx * 60);
-        })(i);
-      }
+    /* Modal */
+    function openModal() {
+      document.getElementById("overlay").classList.add("active");
     }
+    function closeModal(e) {
+      document.getElementById("overlay").classList.remove("active");
+    }
+    document.getElementById("overlay").addEventListener("click", function (e) {
+      if (e.target === this) closeModal();
+    });
+
+    /* Keyboard close */
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeModal();
+    });
   </script>
 </body>
+
 </html>
