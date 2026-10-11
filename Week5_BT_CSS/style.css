@@ -1,0 +1,850 @@
+/* ==========================================================================
+   Blakletterpress — Handcrafted Artisanal CSS Design System
+   ========================================================================== */
+
+/* 1. Standard Fonts Import (Hỗ trợ tiếng Việt 100%, sắc nét, phổ biến, đầy đủ italic) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&display=swap');
+
+/* 2. Design Tokens (CSS Variables) */
+:root {
+    /* Palette: Warm Antique Kraft & Deep Letterpress Lead Ink */
+    --color-bg-base: #f7f4ee;
+    --color-bg-surface: #ffffff;
+    --color-bg-card: #fdfbf7;
+    --color-bg-alt: #f0ebe1;
+    --color-bg-dark: #1b1c1e;
+
+    --color-ink-primary: #212427;
+    --color-ink-secondary: #5a5f66;
+    --color-ink-muted: #828790;
+    --color-ink-light: #f5f3ef;
+
+    --color-accent-terracotta: #a8422b;
+    --color-accent-hover: #8f321d;
+    --color-accent-gold: #c59b27;
+    --color-border: #e2ddd3;
+    --color-border-dark: #2f3338;
+    --color-border-accent: rgba(168, 66, 43, 0.25);
+
+    /* Typography Tokens (Phổ biến, chuẩn mực, 100% tiếng Việt, không lỗi dấu) */
+    --font-heading: 'Times New Roman', Times, serif;
+    --font-serif: 'Times New Roman', Times, serif;
+    --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+    /* Spatial & Radius Tokens (Thiết kế toàn bộ card và khung vuông vức, không bo cong) */
+    --radius-sm: 0px;
+    --radius-md: 0px;
+    --radius-lg: 0px;
+    --radius-full: 0px;
+
+    /* Shadow & Depth */
+    --shadow-subtle: 0 4px 12px rgba(33, 36, 39, 0.04);
+    --shadow-card: 0 8px 24px rgba(33, 36, 39, 0.06), 0 2px 6px rgba(33, 36, 39, 0.03);
+    --shadow-hover: 0 16px 36px rgba(168, 66, 43, 0.12), 0 4px 12px rgba(33, 36, 39, 0.06);
+    --shadow-inner-pressed: inset 0 2px 4px rgba(0, 0, 0, 0.06);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+    /* Sticky header offset for smooth anchor scrolling (Header ngang ~60px) */
+    --header-offset: 80px;
+}
+
+/* 3. Modern Reset & Base Rules */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+}
+
+article[id],
+section[id] {
+    scroll-margin-top: var(--header-offset);
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg-base);
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(197, 155, 39, 0.03) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(168, 66, 43, 0.03) 0%, transparent 40%),
+        url('./images/bg-body.png');
+    background-repeat: repeat;
+    color: var(--color-ink-primary);
+    line-height: 1.75;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow-x: hidden;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+a {
+    color: var(--color-accent-terracotta);
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+a:hover {
+    color: var(--color-accent-hover);
+}
+
+ul {
+    list-style: none;
+}
+
+/* ==========================================================================
+   4. Header & Navigation (.site-header, .main-nav)
+   ========================================================================== */
+.site-header {
+    background: #ffffff;
+    border-top: 4px solid var(--color-accent-terracotta);
+    border-bottom: 1px solid #e5e0d8;
+    padding: 0.75rem 2.5rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+}
+
+.site-name {
+    font-family: var(--font-heading);
+    font-size: 1.45rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #1a1a1a;
+    display: inline-flex;
+    align-items: center;
+    margin: 0;
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+.site-name::before {
+    content: '';
+    display: inline-block;
+    width: 34px;
+    height: 34px;
+    background-image: url('./images/logo.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin-right: 12px;
+    flex-shrink: 0;
+}
+
+.site-name:hover {
+    color: var(--color-accent-terracotta);
+}
+
+.tagline {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: #737373;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.tagline::before {
+    content: '|';
+    font-style: normal;
+    font-weight: 300;
+    color: #d6cfc5;
+    margin: 0 1.25rem;
+}
+
+.tagline::after {
+    display: none;
+}
+
+.main-nav {
+    margin-left: auto;
+    margin-top: 0;
+}
+
+.main-nav ul {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    margin: 0;
+    padding: 0;
+}
+
+.main-nav a {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: normal;
+    color: #2b2b2b;
+    padding: 0.4rem 0.2rem;
+    position: relative;
+    transition: color 0.2s ease;
+}
+
+.main-nav a::after {
+    display: none;
+}
+
+.main-nav a:hover {
+    color: var(--color-accent-terracotta);
+}
+
+/* ==========================================================================
+   5. Main Layout Structure (.layout, main, .sidebar)
+   ========================================================================== */
+.layout {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 2.5rem auto;
+    padding: 0 1.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 320px;
+    gap: 2.5rem;
+    align-items: start;
+    flex: 1;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 3.5rem;
+}
+
+/* General Typography for Headings inside Main & Sections */
+h1,
+h2,
+h3 {
+    color: var(--color-ink-primary);
+    line-height: 1.3;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.8), -0.5px -0.5px 0 rgba(0, 0, 0, 0.06);
+}
+
+h1 {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 3.2vw, 2.5rem);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.75rem;
+}
+
+h1::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 70px;
+    height: 3.5px;
+    background: linear-gradient(90deg, var(--color-accent-terracotta), var(--color-accent-gold));
+    border-radius: var(--radius-full);
+}
+
+h2 {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 2.4vw, 1.85rem);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-bottom: 1.75rem;
+    position: relative;
+    padding-bottom: 0.6rem;
+}
+
+h2::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 48px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent-gold), var(--color-accent-terracotta));
+    border-radius: var(--radius-full);
+}
+
+/* ==========================================================================
+   6. Article: Về Blakletterpress (#gioi-thieu)
+   ========================================================================== */
+#gioi-thieu {
+    background: var(--color-bg-surface);
+    padding: 2.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
+    position: relative;
+}
+
+#gioi-thieu figure {
+    margin: 1.5rem 0 2rem;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background: var(--color-bg-alt);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-subtle);
+}
+
+#gioi-thieu figure img {
+    width: 100%;
+    max-height: 480px;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+#gioi-thieu figure:hover img {
+    transform: scale(1.025);
+}
+
+#gioi-thieu figcaption {
+    padding: 0.85rem 1.25rem;
+    background: #faf8f4;
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 0.95rem;
+    color: var(--color-ink-secondary);
+    text-align: center;
+    border-top: 1px solid var(--color-border);
+}
+
+#gioi-thieu p {
+    font-size: 1.075rem;
+    color: #3b3f44;
+    margin-bottom: 1.25rem;
+    line-height: 1.85;
+}
+
+/* Vintage Artisanal Drop Cap */
+#gioi-thieu p:first-of-type::first-letter {
+    font-family: var(--font-heading);
+    font-size: 3.2rem;
+    float: left;
+    line-height: 0.85;
+    margin-right: 0.65rem;
+    margin-top: 0.1rem;
+    color: var(--color-accent-terracotta);
+    font-weight: 700;
+}
+
+#gioi-thieu p strong {
+    color: var(--color-accent-terracotta);
+    font-weight: 600;
+    border-bottom: 1px dotted var(--color-accent-terracotta);
+}
+
+/* ==========================================================================
+   7. Section: Giá trị cốt lõi (#gia-tri)
+   ========================================================================== */
+#gia-tri {
+    background: var(--color-bg-surface);
+    padding: 2.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
+}
+
+.value-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.value-card {
+    background: linear-gradient(145deg, #ffffff 0%, #faf6ee 100%);
+    border: 1px solid #dfd8cb;
+    border-radius: var(--radius-sm);
+    padding: 2.25rem 1.6rem;
+    position: relative;
+    transition: var(--transition-bounce);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    box-shadow: 0 4px 16px rgba(33, 36, 39, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+    overflow: hidden;
+}
+
+.value-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: transparent;
+    transition: var(--transition-smooth);
+}
+
+.value-card::before {
+    content: '❖';
+    font-size: 1.35rem;
+    color: var(--color-accent-gold);
+    margin-bottom: 0.85rem;
+    display: inline-block;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.9);
+}
+
+.value-card:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-border-accent);
+    box-shadow: 0 16px 36px rgba(168, 66, 43, 0.12), 0 4px 12px rgba(33, 36, 39, 0.04);
+    background: #ffffff;
+}
+
+.value-card:hover::after {
+    background: linear-gradient(90deg, var(--color-accent-gold), var(--color-accent-terracotta));
+}
+
+.value-card h3 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--color-accent-terracotta);
+    margin-bottom: 0.75rem;
+    letter-spacing: 0.05em;
+}
+
+.value-card p {
+    font-size: 0.95rem;
+    color: var(--color-ink-secondary);
+    line-height: 1.65;
+}
+
+/* ==========================================================================
+   8. Section: Đội ngũ (#doi-ngu)
+   ========================================================================== */
+#doi-ngu {
+    background: var(--color-bg-surface);
+    padding: 2.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
+}
+
+.team-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.75rem;
+}
+
+.member {
+    background: linear-gradient(145deg, #ffffff 0%, #faf7f0 100%);
+    border: 1px solid #dfd8cb;
+    border-radius: var(--radius-md);
+    padding: 2rem 1.25rem 1.75rem;
+    text-align: center;
+    transition: var(--transition-bounce);
+    box-shadow: 0 4px 16px rgba(33, 36, 39, 0.04);
+}
+
+.member:hover {
+    transform: translateY(-8px);
+    border-color: var(--color-border-accent);
+    box-shadow: var(--shadow-hover);
+    background: #ffffff;
+}
+
+.member img {
+    width: 140px;
+    height: 140px;
+    border-radius: 0;
+    object-fit: cover;
+    margin: 0 auto 1.25rem;
+    border: 3px solid #ffffff;
+    box-shadow: 0 0 0 1px #dfd8cb, 0 8px 20px rgba(33, 36, 39, 0.1);
+    transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s ease;
+}
+
+.member:hover img {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 2px var(--color-accent-terracotta), 0 12px 28px rgba(168, 66, 43, 0.2);
+}
+
+.member h3 {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    color: var(--color-ink-primary);
+    margin-bottom: 0.35rem;
+}
+
+.member p {
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    font-weight: 500;
+    font-style: normal;
+    color: var(--color-accent-terracotta);
+}
+
+/* ==========================================================================
+   9. Section: Form Liên hệ (#lien-he)
+   ========================================================================== */
+#lien-he {
+    background: var(--color-bg-surface);
+    padding: 2.5rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
+}
+
+.contact-form {
+    max-width: 650px;
+    margin-top: 1rem;
+}
+
+.contact-form p {
+    margin-bottom: 1.5rem;
+}
+
+.contact-form label {
+    display: inline-block;
+    font-weight: 600;
+    font-size: 0.925rem;
+    color: var(--color-ink-primary);
+    margin-bottom: 0.4rem;
+    letter-spacing: 0.02em;
+}
+
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form textarea {
+    width: 100%;
+    padding: 0.85rem 1.1rem;
+    font-family: var(--font-body);
+    font-size: 0.975rem;
+    color: var(--color-ink-primary);
+    background: #fbf9f4;
+    border: 1.5px solid #dcd5c7;
+    border-radius: var(--radius-sm);
+    transition: var(--transition-smooth);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.03);
+}
+
+.contact-form input[type="text"]:focus,
+.contact-form input[type="email"]:focus,
+.contact-form textarea:focus {
+    outline: none;
+    background: #ffffff;
+    border-color: var(--color-accent-terracotta);
+    box-shadow: 0 0 0 4px rgba(168, 66, 43, 0.12), inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+.contact-form textarea {
+    resize: vertical;
+    min-height: 130px;
+}
+
+.contact-form button[type="submit"] {
+    font-family: var(--font-body);
+    background: linear-gradient(180deg, #b84b33 0%, #993721 100%);
+    color: #ffffff;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 1rem 2.75rem;
+    border: 1px solid #822e1b;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 14px rgba(168, 66, 43, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.contact-form button[type="submit"]:hover {
+    background: linear-gradient(180deg, #c75339 0%, #aa3e25 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(168, 66, 43, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.contact-form button[type="submit"]:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 6px rgba(168, 66, 43, 0.25), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+/* ==========================================================================
+   10. Sidebar (.sidebar)
+   ========================================================================== */
+.sidebar {
+    background: var(--color-bg-surface);
+    padding: 2.25rem 1.75rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    box-shadow: var(--shadow-card);
+    position: sticky;
+    top: 140px;
+}
+
+.sidebar h2 {
+    font-size: 1.35rem;
+    margin-bottom: 1.25rem;
+}
+
+.sidebar .recent {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.sidebar .recent li {
+    background: #faf8f3;
+    border: 1px solid #ebe4d5;
+    border-radius: var(--radius-sm);
+    padding: 0.75rem 1rem 0.75rem 2rem;
+    position: relative;
+    transition: var(--transition-smooth);
+}
+
+.sidebar .recent li::before {
+    content: '▸';
+    position: absolute;
+    left: 0.85rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--color-accent-terracotta);
+    font-size: 0.9rem;
+    transition: var(--transition-smooth);
+}
+
+.sidebar .recent li:hover {
+    background: #ffffff;
+    border-color: var(--color-accent-terracotta);
+    transform: translateX(4px);
+    box-shadow: 0 4px 14px rgba(168, 66, 43, 0.08);
+}
+
+.sidebar .recent li:hover::before {
+    left: 1rem;
+    color: var(--color-accent-hover);
+}
+
+.sidebar .recent a {
+    color: var(--color-ink-primary);
+    font-size: 0.925rem;
+    font-weight: 600;
+    line-height: 1.45;
+    display: block;
+}
+
+.sidebar .recent li:hover a {
+    color: var(--color-accent-terracotta);
+}
+
+.sidebar p {
+    font-size: 0.925rem;
+    color: var(--color-ink-secondary);
+}
+
+.sidebar p a {
+    font-weight: 700;
+    border-bottom: 1.5px solid var(--color-accent-terracotta);
+    padding-bottom: 1px;
+}
+
+/* ==========================================================================
+   11. Footer (.site-footer)
+   ========================================================================== */
+.site-footer {
+    background: var(--color-bg-dark);
+    color: #d1d5db;
+    border-top: 4px solid var(--color-accent-terracotta);
+    padding: 4rem 1.5rem 2.5rem;
+    margin-top: 4rem;
+}
+
+.footer-cols {
+    width: 100%;
+    max-width: var(--container-max-width);
+    margin: 0 auto 3rem;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2.5rem;
+}
+
+.footer-cols li h3 {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    position: relative;
+    padding-bottom: 0.5rem;
+}
+
+.footer-cols li h3::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 28px;
+    height: 2px;
+    background: var(--color-accent-gold);
+}
+
+.footer-cols li p {
+    font-size: 0.925rem;
+    color: #a3a9b3;
+    line-height: 1.7;
+}
+
+.copyright {
+    text-align: center;
+    border-top: 1px solid var(--color-border-dark);
+    padding-top: 2rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+
+.copyright small {
+    font-size: 100%;
+}
+
+/* ==========================================================================
+   12. Responsive Media Queries (Mobile & Tablet)
+   ========================================================================== */
+/* Tablet Breakpoint (<= 1024px) */
+@media (max-width: 1024px) {
+    .layout {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .sidebar {
+        position: static;
+    }
+
+    .footer-cols {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+}
+
+/* Mobile Breakpoint (<= 768px) */
+@media (max-width: 768px) {
+    :root {
+        --header-offset: 110px;
+    }
+
+    .site-header {
+        flex-wrap: wrap;
+        padding: 0.75rem 1.25rem;
+        justify-content: space-between;
+    }
+
+    .site-name {
+        font-size: 1.2rem;
+        letter-spacing: 0.12em;
+    }
+
+    .site-name::before {
+        width: 28px;
+        height: 28px;
+        margin-right: 8px;
+    }
+
+    .tagline {
+        display: none;
+    }
+
+    .main-nav {
+        width: 100%;
+        margin-top: 0.5rem;
+    }
+
+    .main-nav ul {
+        gap: 1.25rem;
+        justify-content: flex-start;
+    }
+
+    .main-nav a {
+        font-size: 0.9rem;
+    }
+
+    .layout {
+        margin: 1.5rem auto;
+        padding: 0 1rem;
+        gap: 2rem;
+    }
+
+    #gioi-thieu,
+    #gia-tri,
+    #doi-ngu,
+    #lien-he,
+    .sidebar {
+        padding: 1.75rem 1.25rem;
+    }
+
+    .value-list,
+    .team-list {
+        grid-template-columns: 1fr;
+        gap: 1.25rem;
+    }
+
+    .member img {
+        width: 120px;
+        height: 120px;
+    }
+
+    .contact-form button[type="submit"] {
+        width: 100%;
+    }
+
+    .footer-cols {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+        margin-bottom: 2rem;
+    }
+}
+
+/* Small Smartphone Breakpoint (<= 480px) */
+@media (max-width: 480px) {
+    :root {
+        --header-offset: 100px;
+    }
+
+    .site-name {
+        font-size: 1.1rem;
+        letter-spacing: 0.08em;
+    }
+
+    .main-nav ul {
+        gap: 0.85rem;
+    }
+
+    .main-nav a {
+        font-size: 0.825rem;
+    }
+
+    h1 {
+        font-size: 1.75rem;
+    }
+
+    h2 {
+        font-size: 1.4rem;
+    }
+}
