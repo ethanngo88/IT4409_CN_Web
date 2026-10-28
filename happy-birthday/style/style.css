@@ -72,12 +72,14 @@ body {
   font-size: 4.5rem;
 }
 
-/* Greeting and name stay on one line: the line is about 10 times as wide as the font size,
-   so the size shrinks with the container (100vh wide, or 90vw on phones). A much longer
-   name in customize.json needs smaller numbers here */
-h1.one {
-  font-size: min(4.5rem, 9vh, 8.3vw);
-  white-space: nowrap;
+/* Wider than a phone, greeting and name stay on one line: the line is about 10 times as wide
+   as the font size, so the size shrinks with the container (100vh wide, at most the screen
+   width). A much longer name in customize.json needs smaller numbers here */
+@media screen and (min-width: 501px) {
+  h1.one {
+    font-size: min(4.5rem, 9vh, 8.3vw);
+    white-space: nowrap;
+  }
 }
 
 .one > img {
