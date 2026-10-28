@@ -26,6 +26,11 @@ const fetchData = () => {
 
 const random = (min, max) => min + Math.random() * (max - min);
 
+// Area two rectangles ({ left, right, top, bottom }) have in common
+const overlapArea = (a, b) =>
+  Math.max(0, Math.min(a.right, b.right) - Math.max(a.left, b.left)) *
+  Math.max(0, Math.min(a.bottom, b.bottom) - Math.max(a.top, b.top));
+
 // Starry night: twinkling stars and the odd shooting star, drawn behind the page
 const starrySky = () => {
   const canvas = document.querySelector(".sky");
@@ -140,7 +145,7 @@ const starrySky = () => {
   requestAnimationFrame(draw);
 };
 
-// Photo rain: each photo falls from the top with its own tilt and sway
+// Photo rain: each photo falls from the top with its own size, tilt and sway
 const photoRain = () => {
   const baloons = document.querySelector(".baloons");
   const originals = Array.from(baloons.children);
@@ -155,44 +160,97 @@ const photoRain = () => {
   }
 
   const photos = baloons.querySelectorAll("img");
-  const photoWidth = photos[0].offsetWidth;
-  // The screen is split into lanes a little wider than a photo, and a photo only follows
-  // another one down the same lane once there is room, so they rarely cover each other
-  const lanes = Math.max(2, Math.floor(window.innerWidth / (photoWidth * 1.2)));
-  const laneWidth = window.innerWidth / lanes;
-  // Every photo falls at the same steady speed, so none catches up with the one ahead of it
-  const speed = Math.max(window.innerHeight, 700) / 5;
-  // When each lane is free for its next photo, staggered so the first ones don't drop in a row
-  const laneFree = Array.from({ length: lanes }, () => random(0, 1.5));
-  let lastLane = -1;
+  const screenWidth = window.innerWidth;
+  const screenHeight = window.innerHeight;
+  // Every photo falls at the same steady speed, so photos never move relative to each other:
+  // however they overlap when one starts falling is how they overlap all the way down
+  const speed = Math.max(screenHeight, 700) / 5;
+  const placed = [];
+  let start = 0;
   const rain = new TimelineMax();
 
-  photos.forEach(photo => {
+  photos.forEach((photo, i) => {
+    // Each photo gets its own size, from a bit smaller to a bit bigger than the base one
+    photo.style.setProperty("--size", random(0.8, 1.3));
+    const width = photo.offsetWidth;
     // A photo with no width / height in index.html that hasn't loaded yet has no height
     // so far, so guess it is a portrait one
-    const height = photo.offsetHeight > photoWidth / 2 ? photo.offsetHeight : photoWidth * 1.4;
-    // Take one of the lanes that frees up soonest, but not the one used last time
-    const open = laneFree.map((_, lane) => lane).filter(lane => lane !== lastLane);
-    const soonest = Math.min(...open.map(lane => laneFree[lane]));
-    const choices = open.filter(lane => laneFree[lane] < soonest + 0.5);
-    const lane = choices[Math.floor(Math.random() * choices.length)];
-    const start = laneFree[lane] + random(0, 0.3);
+    const height = photo.offsetHeight > width / 2 ? photo.offsetHeight : width * 1.4;
     const top = -height - 50;
-    const fall = (window.innerHeight + 50 - top) / speed;
-    const tilt = random(-6, 6);
-    const swing = random(3, 5);
-    // Sway within the room the lane leaves on either side of the photo
-    const drift = (random(0.5, 1) * (laneWidth - photoWidth)) / 2;
+    const fall = (screenHeight + 50 - top) / speed;
+    // Start often enough that the photos on screen add up to about its whole area
+    const onScreen = (screenWidth * screenHeight) / (width * height);
+    start += (random(0.5, 1.5) * fall) / onScreen;
 
-    // The next photo can enter this lane once this one has moved down its own height and a
-    // random gap, so the lanes don't look like conveyor belts
-    laneFree[lane] = start + (height + random(40, 140)) / speed;
-    lastLane = lane;
+    // How much of this photo, and of its face area (the upper middle), the photos that
+    // started before it would cover if it fell centred at x. Those stay on top of it
+    const cover = x => {
+      const box = { left: x - width / 2, right: x + width / 2, top, bottom: top + height };
+      const face = {
+        left: x - width * 0.3,
+        right: x + width * 0.3,
+        top: top + height * 0.05,
+        bottom: top + height * 0.55
+      };
+      let all = 0;
+      let onFace = 0;
+      placed.forEach(other => {
+        const otherTop = other.top + speed * (start - other.start);
+        const otherBox = {
+          left: other.x - other.width / 2,
+          right: other.x + other.width / 2,
+          top: otherTop,
+          bottom: otherTop + other.height
+        };
+        // Sway and tilt move the edges and corners around, so keep the face well clear
+        const pad = 25;
+        all += overlapArea(box, otherBox);
+        onFace += overlapArea(face, {
+          left: otherBox.left - pad,
+          right: otherBox.right + pad,
+          top: otherBox.top - pad,
+          bottom: otherBox.bottom + pad
+        });
+      });
+      return {
+        all: all / (width * height),
+        face: onFace / (width * 0.6 * height * 0.5)
+      };
+    };
+
+    // Try spots across the screen (a photo may hang a little off either side), keep the
+    // ones that leave the face clear and cover at most 35% of the photo, and take the one
+    // closest to a random amount of overlap
+    let spot = null;
+    while (!spot) {
+      const target = random(0.05, 0.3);
+      for (let tries = 0; tries < 15; tries++) {
+        const x = random(width * 0.3, screenWidth - width * 0.3);
+        const covered = cover(x);
+        if (
+          covered.face < 0.05 &&
+          covered.all < 0.35 &&
+          (!spot || Math.abs(covered.all - target) < Math.abs(spot.all - target))
+        ) {
+          spot = { x, all: covered.all };
+        }
+      }
+      // Nowhere fits yet: wait a moment for the photos ahead to move further down
+      if (!spot) start += 0.1;
+    }
+    const { x } = spot;
+    placed.push({ x, width, height, top, start });
+
+    const tilt = random(-15, 15);
+    const swing = random(3, 6);
+    const drift = random(5, 15);
 
     TweenMax.set(photo, {
-      left: `${((lane + 0.5) / lanes) * 100}%`,
+      left: `${(x / screenWidth) * 100}%`,
       xPercent: -50,
-      y: top
+      y: top,
+      // Photos that started earlier are lower down the screen and stay on top
+      zIndex: photos.length - i
     });
 
     rain

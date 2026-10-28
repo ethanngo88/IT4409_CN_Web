@@ -225,12 +225,13 @@ h1.one {
   margin-top: 20px;
 }
 
-/* Falling photos: polaroid-style frame, positioned and animated by script/main.js */
+/* Falling photos: polaroid-style frame, positioned and animated by script/main.js,
+   which also gives each one a random --size */
 .baloons img {
   display: inline-block;
   position: absolute;
   top: 0;
-  width: clamp(90px, 13vw, 160px);
+  width: calc(var(--size, 1) * clamp(90px, 13vw, 160px));
   height: auto;
   padding: 6px 6px 22px;
   background: #fff;
