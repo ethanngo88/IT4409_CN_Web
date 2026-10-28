@@ -38,6 +38,8 @@ body {
 .container {
   height: 100vh;
   width: 100vh;
+  /* Portrait tablets: a square as wide as the screen is tall would run off the right edge */
+  max-width: 100%;
   margin: 0 auto;
   text-align: center;
   visibility: hidden;
@@ -68,6 +70,14 @@ body {
 
 .one {
   font-size: 4.5rem;
+}
+
+/* Greeting and name stay on one line: the line is about 10 times as wide as the font size,
+   so the size shrinks with the container (100vh wide, or 90vw on phones). A much longer
+   name in customize.json needs smaller numbers here */
+h1.one {
+  font-size: min(4.5rem, 9vh, 8.3vw);
+  white-space: nowrap;
 }
 
 .one > img {
@@ -122,11 +132,32 @@ body {
   text-shadow: none;
 }
 
+/* Video that pops up after "Send"; script/main.js plays it and waits for it to end */
+.clip video {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  max-height: 60vh;
+  border-radius: 12px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9), 0 0 40px rgba(170, 160, 255, 0.45);
+}
+
+/* Only shown when the browser refuses sound and the video starts muted */
+.clip-hint {
+  visibility: hidden;
+  color: var(--moonlight);
+}
+
 .five p {
   font-size: 2rem;
   position: absolute;
   left: 0;
   right: 0;
+}
+
+.five .ahem {
+  font-size: 3rem;
+  color: var(--gold);
 }
 
 .idea-3 strong {
@@ -142,6 +173,7 @@ body {
   text-shadow: 0 0 25px color-mix(in srgb, var(--pink) 50%, transparent);
 }
 
+.ahem span,
 .idea-5 span,
 .idea-6 span,
 .wish-hbd span {
@@ -198,7 +230,7 @@ body {
   display: inline-block;
   position: absolute;
   top: 0;
-  width: clamp(110px, 16vw, 190px);
+  width: clamp(90px, 13vw, 160px);
   height: auto;
   padding: 6px 6px 22px;
   background: #fff;
@@ -286,6 +318,7 @@ body {
 }
 
 /* The heading is split into one span per letter; keep the span holding the space from collapsing */
+.ahem span,
 .wish-hbd span {
   white-space: pre;
 }

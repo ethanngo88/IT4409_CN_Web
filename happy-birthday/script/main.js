@@ -140,7 +140,7 @@ const starrySky = () => {
   requestAnimationFrame(draw);
 };
 
-// Photo rain: each photo falls from the top with its own tilt, sway and speed
+// Photo rain: each photo falls from the top with its own tilt and sway
 const photoRain = () => {
   const baloons = document.querySelector(".baloons");
   const originals = Array.from(baloons.children);
@@ -155,23 +155,44 @@ const photoRain = () => {
   }
 
   const photos = baloons.querySelectorAll("img");
-  // Shuffle the columns so photos falling one after another land far apart
-  const columns = Array.from(photos, (_, i) => i).sort(() => Math.random() - 0.5);
-  // However many photos there are, they all start falling within ~7 seconds
-  const gap = 7 / photos.length;
+  const photoWidth = photos[0].offsetWidth;
+  // The screen is split into lanes a little wider than a photo, and a photo only follows
+  // another one down the same lane once there is room, so they rarely cover each other
+  const lanes = Math.max(2, Math.floor(window.innerWidth / (photoWidth * 1.2)));
+  const laneWidth = window.innerWidth / lanes;
+  // Every photo falls at the same steady speed, so none catches up with the one ahead of it
+  const speed = Math.max(window.innerHeight, 700) / 5;
+  // When each lane is free for its next photo, staggered so the first ones don't drop in a row
+  const laneFree = Array.from({ length: lanes }, () => random(0, 1.5));
+  let lastLane = -1;
   const rain = new TimelineMax();
 
-  photos.forEach((photo, i) => {
-    const fall = random(4.5, 6);
-    const tilt = random(-20, 20);
-    const swing = random(6, 14);
-    const drift = random(25, 60);
-    const start = i * gap + random(0, gap / 2);
+  photos.forEach(photo => {
+    // A photo with no width / height in index.html that hasn't loaded yet has no height
+    // so far, so guess it is a portrait one
+    const height = photo.offsetHeight > photoWidth / 2 ? photo.offsetHeight : photoWidth * 1.4;
+    // Take one of the lanes that frees up soonest, but not the one used last time
+    const open = laneFree.map((_, lane) => lane).filter(lane => lane !== lastLane);
+    const soonest = Math.min(...open.map(lane => laneFree[lane]));
+    const choices = open.filter(lane => laneFree[lane] < soonest + 0.5);
+    const lane = choices[Math.floor(Math.random() * choices.length)];
+    const start = laneFree[lane] + random(0, 0.3);
+    const top = -height - 50;
+    const fall = (window.innerHeight + 50 - top) / speed;
+    const tilt = random(-6, 6);
+    const swing = random(3, 5);
+    // Sway within the room the lane leaves on either side of the photo
+    const drift = (random(0.5, 1) * (laneWidth - photoWidth)) / 2;
+
+    // The next photo can enter this lane once this one has moved down its own height and a
+    // random gap, so the lanes don't look like conveyor belts
+    laneFree[lane] = start + (height + random(40, 140)) / speed;
+    lastLane = lane;
 
     TweenMax.set(photo, {
-      left: `${((columns[i] + 0.5) / photos.length) * 100}%`,
+      left: `${((lane + 0.5) / lanes) * 100}%`,
       xPercent: -50,
-      y: -450
+      y: top
     });
 
     rain
@@ -180,7 +201,7 @@ const photoRain = () => {
         fall,
         {
           // Measured when the photo starts falling, so a resized or rotated screen still works
-          y: () => window.innerHeight + 100,
+          y: () => window.innerHeight + 50,
           ease: Power0.easeNone
         },
         start
@@ -205,11 +226,43 @@ const photoRain = () => {
   return rain;
 };
 
+// Video after "Send": the timeline is paused while it plays and resumes when it ends.
+// Browsers may refuse sound until the viewer has touched the page, so it falls back to
+// playing muted and the first tap anywhere turns the sound on
+const playClip = timeline => {
+  const video = document.querySelector(".clip video");
+  const hint = document.querySelector(".clip-hint");
+  const resume = () => timeline.resume();
+
+  video.onended = resume;
+  video.currentTime = 0;
+  video.muted = false;
+  hint.style.visibility = "hidden";
+  video
+    .play()
+    .catch(() => {
+      video.muted = true;
+      hint.style.visibility = "visible";
+      document.addEventListener(
+        "click",
+        () => {
+          video.muted = false;
+          hint.style.visibility = "hidden";
+        },
+        { once: true }
+      );
+      return video.play();
+    })
+    // Can't play at all (missing file, power saving mode...): skip it instead of getting stuck
+    .catch(resume);
+};
+
 // Animation Timeline
 const animationTimeline = () => {
   // Spit chars that needs to be animated individually
   const textBoxChars = document.getElementsByClassName("hbd-chatbox")[0];
   const hbd = document.getElementsByClassName("wish-hbd")[0];
+  const ahem = document.getElementsByClassName("ahem")[0];
 
   textBoxChars.innerHTML = `<span>${textBoxChars.innerHTML
     .split("")
@@ -218,6 +271,10 @@ const animationTimeline = () => {
   hbd.innerHTML = `<span>${hbd.innerHTML
     .split("")
     .join("</span><span>")}</span`;
+
+  ahem.innerHTML = `<span>${ahem.innerHTML
+    .split("")
+    .join("</span><span>")}</span>`;
 
   const ideaTextTrans = {
     opacity: 0,
@@ -312,6 +369,75 @@ const animationTimeline = () => {
       },
       "+=0.7"
     )
+    // "Search result": the video pops up and the timeline waits for it to finish
+    .from(".clip", 0.7, {
+      scale: 0.6,
+      opacity: 0,
+      y: 40,
+      ease: Back.easeOut
+    })
+    .addPause("+=0.3", () => playClip(tl))
+    // Wrong video! Fling it off to the side
+    .to(
+      ".clip",
+      0.5,
+      {
+        xPercent: -60,
+        rotation: -15,
+        opacity: 0,
+        ease: Back.easeIn
+      },
+      "+=0.3"
+    )
+    // "À chết nhầm...": drops in with a bounce, shakes its head, then falls away
+    .from(".oops", 0.8, {
+      opacity: 0,
+      y: -80,
+      ease: Bounce.easeOut
+    })
+    .to(
+      ".oops",
+      0.08,
+      {
+        x: 12,
+        repeat: 7,
+        yoyo: true
+      },
+      "+=0.3"
+    )
+    .to(
+      ".oops",
+      0.5,
+      {
+        opacity: 0,
+        y: 60,
+        rotation: 10,
+        ease: Power2.easeIn
+      },
+      "+=1.2"
+    )
+    // "E hèm...": letters pop up one by one, then a little throat-clearing pulse
+    .staggerFrom(
+      ".ahem span",
+      0.4,
+      {
+        opacity: 0,
+        y: 20,
+        ease: Back.easeOut
+      },
+      0.12
+    )
+    .to(
+      ".ahem",
+      0.12,
+      {
+        scale: 1.15,
+        repeat: 3,
+        yoyo: true
+      },
+      "+=0.3"
+    )
+    .to(".ahem", 0.7, ideaTextTransLeave, "+=1")
     .from(".idea-1", 0.7, ideaTextTrans)
     .to(".idea-1", 0.7, ideaTextTransLeave, "+=1.5")
     .from(".idea-2", 0.7, ideaTextTrans)
