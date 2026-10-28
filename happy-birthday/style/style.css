@@ -1,0 +1,369 @@
+/* Night-sky palette, also read by the animation in script/main.js */
+:root {
+  --starlight: #f5f3ff;
+  --moonlight: #c5c9f2;
+  --gold: #ffd47a;
+  --pink: #ff9dd2;
+  --violet: #6c5ce7;
+  --lavender: #a29bfe;
+  --night: #1b1446;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: "Work Sans", sans-serif;
+  color: var(--starlight);
+  background: #04061a;
+}
+
+/* Starry night sky behind the page; the stars themselves are drawn by script/main.js */
+.sky {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1;
+  background:
+    linear-gradient(115deg, transparent 25%, rgba(150, 130, 255, 0.07) 42%, rgba(255, 255, 255, 0.05) 50%, rgba(150, 130, 255, 0.07) 58%, transparent 75%),
+    radial-gradient(ellipse at 15% 10%, rgba(120, 90, 220, 0.25), transparent 50%),
+    radial-gradient(ellipse at 90% 90%, rgba(255, 120, 190, 0.12), transparent 55%),
+    linear-gradient(#04061a, #0b1236 55%, #1c1650);
+}
+
+.container {
+  height: 100vh;
+  width: 100vh;
+  margin: 0 auto;
+  text-align: center;
+  visibility: hidden;
+  position: relative;
+  overflow: hidden;
+  text-shadow: 0 0 12px rgba(160, 150, 255, 0.35);
+}
+
+.container div.six {
+  top: 10vh;
+  z-index: 1;
+}
+
+.container div.seven,
+.container div.eight {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+}
+
+.container > div {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 20vh;
+}
+
+.one {
+  font-size: 4.5rem;
+}
+
+.one > img {
+  vertical-align: middle;
+  margin-bottom: 10px;
+  max-width: 100%;
+  height: auto;
+}
+
+[data-node-name="name"] {
+  color: var(--gold);
+  text-shadow: 0 0 24px color-mix(in srgb, var(--gold) 55%, transparent);
+}
+
+.two {
+  font-size: 1.2rem;
+  font-weight: lighter;
+  color: var(--moonlight);
+}
+
+.three {
+  font-size: 3rem;
+}
+
+.four .text-box {
+  width: 600px;
+  margin: 0 auto;
+  border: 3px solid color-mix(in srgb, var(--moonlight) 45%, transparent);
+  border-radius: 5px;
+  padding: 10px;
+  position: relative;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.text-box p {
+  margin: 0;
+  text-align: left;
+}
+
+.text-box span {
+  visibility: hidden;
+}
+
+.text-box .fake-btn {
+  position: absolute;
+  right: 5px;
+  bottom: 5px;
+  color: #fff;
+  background-color: var(--violet);
+  padding: 5px 8px;
+  border-radius: 3px;
+  text-shadow: none;
+}
+
+.five p {
+  font-size: 2rem;
+  position: absolute;
+  left: 0;
+  right: 0;
+}
+
+.idea-3 strong {
+  padding: 3px 5px;
+  border-radius: 3px;
+  display: inline-block;
+  text-shadow: none;
+}
+
+.five .idea-5 {
+  font-size: 4rem;
+  color: var(--pink);
+  text-shadow: 0 0 25px color-mix(in srgb, var(--pink) 50%, transparent);
+}
+
+.idea-5 span,
+.idea-6 span,
+.wish-hbd span {
+  display: inline-block;
+}
+
+.idea-6 span {
+  font-size: 15rem;
+  color: var(--gold);
+  text-shadow: 0 0 40px color-mix(in srgb, var(--gold) 45%, transparent);
+}
+
+.six {
+  position: relative;
+}
+
+/* Birthday photo with the party hat on the head. --hat-x / --hat-y are where the middle
+   of the hat's brim sits, as a percentage of the photo's width / height. Update them (and
+   --hat-width / --hat-tilt) whenever imagePath in customize.json points to a different photo */
+.dp-frame {
+  --hat-x: 53.5%;
+  --hat-y: 41%;
+  --hat-width: 15%;
+  --hat-tilt: -5deg;
+  position: relative;
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* Capped at half the screen height so the wish below always fits */
+.six .lydia-dp {
+  display: block;
+  max-width: 90vw;
+  max-height: 50vh;
+  border-radius: 12px;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.9), 0 0 40px rgba(170, 160, 255, 0.45);
+}
+
+.six .hat {
+  position: absolute;
+  width: var(--hat-width);
+  left: calc(var(--hat-x) - var(--hat-width) / 2);
+  bottom: calc(100% - var(--hat-y));
+  transform: rotate(var(--hat-tilt));
+  transform-origin: 50% 100%;
+}
+
+.wish {
+  margin-top: 20px;
+}
+
+/* Falling photos: polaroid-style frame, positioned and animated by script/main.js */
+.baloons img {
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  width: clamp(110px, 16vw, 190px);
+  height: auto;
+  padding: 6px 6px 22px;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 20px rgba(170, 160, 255, 0.3);
+  will-change: transform;
+}
+
+/* Bursts add light to the night sky instead of painting over it, softly enough
+   that the wish on top stays readable */
+.eight {
+  mix-blend-mode: screen;
+  opacity: 0.55;
+}
+
+.eight svg {
+  width: 25px;
+  position: absolute;
+  top: 0;
+  left: 0;
+  visibility: hidden;
+  z-index: -1;
+}
+
+.eight svg:nth-child(1) {
+  top: 7vh;
+  left: 5vw;
+  fill: var(--pink);
+}
+
+.eight svg:nth-child(2) {
+  top: 23vh;
+  left: 35vw;
+  fill: #81ecec;
+}
+
+.eight svg:nth-child(3) {
+  top: 33vh;
+  left: 23vw;
+  fill: #74b9ff;
+}
+
+.eight svg:nth-child(4) {
+  top: 43vh;
+  left: 57vw;
+  fill: var(--violet);
+}
+
+.eight svg:nth-child(5) {
+  top: 68vh;
+  left: 7vw;
+  fill: #fd79a8;
+}
+
+.eight svg:nth-child(6) {
+  top: 42vh;
+  left: 77vw;
+  fill: #e056fd;
+}
+
+.eight svg:nth-child(7) {
+  top: 68vh;
+  left: 83vw;
+  fill: var(--lavender);
+}
+
+.eight svg:nth-child(8) {
+  top: 86vh;
+  left: 37vw;
+  fill: #f8a5c2;
+}
+
+.eight svg:nth-child(9) {
+  top: 94vh;
+  left: 87vw;
+  fill: #81a4ff;
+}
+
+.wish-hbd {
+  font-size: 3em;
+  margin: 0;
+  text-transform: uppercase;
+  /* Dark halo keeps the wish readable while the bursts light up the sky behind it */
+  text-shadow: 0 1px 6px rgba(4, 6, 26, 0.8), 0 0 20px color-mix(in srgb, var(--pink) 45%, transparent);
+}
+
+/* The heading is split into one span per letter; keep the span holding the space from collapsing */
+.wish-hbd span {
+  white-space: pre;
+}
+
+.wish h5 {
+  font-weight: lighter;
+  font-size: 2rem;
+  margin: 10px 0 0;
+  color: var(--moonlight);
+  text-shadow: 0 1px 6px rgba(4, 6, 26, 0.9), 0 0 3px rgba(4, 6, 26, 0.6);
+}
+
+.nine p {
+  font-size: 2rem;
+  font-weight: lighter;
+}
+
+#replay {
+  z-index: 3;
+  cursor: pointer;
+  color: var(--gold);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--gold) 50%, transparent);
+  text-underline-offset: 6px;
+}
+
+.nine .last-smile {
+  color: var(--gold);
+}
+
+/* Media Queries */
+@media screen and (max-width: 500px) {
+  .container {
+    width: 90%;
+  }
+
+  .four .text-box {
+    width: 90%;
+  }
+
+  .text-box .fake-btn {
+    right: 5px;
+    bottom: -38px;
+  }
+
+  .idea-5 span {
+    display: block;
+  }
+
+  .idea-6 span {
+    font-size: 10rem;
+  }
+
+  .wish-hbd {
+    font-size: 2.2em;
+  }
+
+  .wish h5 {
+    font-size: 1.4rem;
+  }
+
+  .nine p {
+    font-size: 1.5rem;
+    font-weight: lighter;
+  }
+}
+
+/* Short screens, like a phone held sideways: shrink the photo so the wish still fits below */
+@media screen and (max-height: 500px) {
+  .six .lydia-dp {
+    max-height: 38vh;
+  }
+
+  .wish-hbd {
+    font-size: 2em;
+  }
+
+  .wish h5 {
+    font-size: 1.2rem;
+  }
+}
