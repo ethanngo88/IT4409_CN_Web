@@ -284,6 +284,50 @@ const photoRain = () => {
   return rain;
 };
 
+// Hand-written letter: letterText from customize.json appears one character at a time, as if
+// being written, lingering a little at punctuation and line breaks
+const writeLetter = () => {
+  const card = document.querySelector(".letter-card");
+  const text = document.querySelector(".letter-text");
+  // Seconds between two characters: lower writes faster
+  const pace = 0.05;
+
+  // fetchData puts the text in with innerText, which turns every line break into a <br>
+  const content = Array.from(text.childNodes)
+    .map(node => (node.nodeName === "BR" ? "\n" : node.textContent))
+    .join("")
+    .normalize("NFC");
+  // One piece per character as the eye sees it, so emoji and accented letters stay whole
+  const chars =
+    window.Intl && Intl.Segmenter
+      ? Array.from(new Intl.Segmenter().segment(content), part => part.segment)
+      : Array.from(content);
+
+  // Keep the newest character in sight when the letter is taller than the card
+  const keepInView = span => {
+    const margin = 20;
+    const bottom = span.offsetTop + span.offsetHeight + margin;
+    if (bottom > card.scrollTop + card.clientHeight) {
+      card.scrollTop = bottom - card.clientHeight;
+    } else if (span.offsetTop - margin < card.scrollTop) {
+      card.scrollTop = span.offsetTop - margin;
+    }
+  };
+
+  text.textContent = "";
+  const writing = new TimelineMax();
+  let time = 0;
+  chars.forEach(char => {
+    const span = document.createElement("span");
+    span.textContent = char;
+    text.appendChild(span);
+    writing.to(span, 0.4, { opacity: 1, onStart: () => keepInView(span) }, time);
+    time += pace * (/\n/.test(char) ? 12 : /[.!?…]/.test(char) ? 8 : /[,;:]/.test(char) ? 4 : 1);
+  });
+
+  return writing;
+};
+
 // Video after "Send": the timeline is paused while it plays and resumes when it ends.
 // Browsers may refuse sound until the viewer has touched the page, so it falls back to
 // playing muted and the first tap anywhere turns the sound on
@@ -313,6 +357,18 @@ const playClip = timeline => {
     })
     // Can't play at all (missing file, power saving mode...): skip it instead of getting stuck
     .catch(resume);
+};
+
+// Hold the timeline until the viewer taps the element, then carry on
+const waitForTap = (selector, timeline, onTap = () => {}) => {
+  document.querySelector(selector).addEventListener(
+    "click",
+    () => {
+      onTap();
+      timeline.resume();
+    },
+    { once: true }
+  );
 };
 
 // Animation Timeline
@@ -639,6 +695,45 @@ const animationTimeline = () => {
       y: 30,
       zIndex: "-1"
     })
+    // Hand-written letter: the envelope bobs until it is tapped, then opens and the letter
+    // inside is written out. The story waits again until "Đọc xong rồi" is tapped
+    .fromTo(
+      ".envelope-wrap",
+      0.8,
+      { autoAlpha: 0, y: 60, scale: 0.8 },
+      { autoAlpha: 1, y: 0, scale: 1, ease: Back.easeOut }
+    )
+    .addPause("+=0.2", () => {
+      const bob = TweenMax.to(".envelope", 0.8, {
+        y: -10,
+        rotation: 2,
+        ease: Sine.easeInOut,
+        repeat: -1,
+        yoyo: true
+      });
+      waitForTap(".envelope-wrap", tl, () => {
+        bob.kill();
+        TweenMax.to(".envelope", 0.2, { y: 0, rotation: 0 });
+      });
+    })
+    .to(".letter-hint", 0.3, { autoAlpha: 0 })
+    .to(".envelope-seal", 0.3, { scale: 0, opacity: 0, ease: Back.easeIn }, "-=0.2")
+    .to(".envelope-flap", 0.6, { rotationX: 180, ease: Power2.easeInOut })
+    // Past halfway the open flap goes behind the letter
+    .set(".envelope-flap", { zIndex: 1 }, "-=0.3")
+    .to(".envelope-paper", 0.7, { yPercent: -55, ease: Power2.easeOut })
+    .to(".envelope-wrap", 0.6, { autoAlpha: 0, y: 120, ease: Power2.easeIn }, "+=0.2")
+    .fromTo(
+      ".letter-sheet",
+      0.9,
+      { autoAlpha: 0, scale: 0.4, y: -40 },
+      { autoAlpha: 1, scale: 1, y: 0, ease: Back.easeOut.config(1.2) },
+      "-=0.4"
+    )
+    .add(writeLetter())
+    .fromTo(".letter-next", 0.5, { autoAlpha: 0, y: 10 }, { autoAlpha: 1, y: 0 }, "+=0.5")
+    .addPause("+=0", () => waitForTap(".letter-next", tl))
+    .to(".letter", 0.6, { autoAlpha: 0, y: -30 })
     .staggerFrom(".nine p", 1, ideaTextTrans, 1.2)
     .to(
       ".last-smile",

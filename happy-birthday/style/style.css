@@ -332,6 +332,153 @@ h1.one {
   text-shadow: 0 1px 6px rgba(4, 6, 26, 0.9), 0 0 3px rgba(4, 6, 26, 0.6);
 }
 
+/* Hand-written letter after the birthday photo: an envelope that opens when tapped, then the
+   letterText from customize.json, written onto the page by script/main.js */
+/* Covers the whole screen like the photo rain, so its glow isn't cut off at the edges of
+   .container on phones */
+.container div.letter {
+  position: fixed;
+  top: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  /* Only what is on show takes taps, so #replay underneath stays clickable afterwards */
+  pointer-events: none;
+}
+
+/* The envelope and the letter take turns in the middle of the screen */
+.letter > * {
+  grid-area: 1 / 1;
+  pointer-events: auto;
+}
+
+.envelope-wrap {
+  cursor: pointer;
+}
+
+.envelope {
+  position: relative;
+  width: min(300px, 75vw);
+  aspect-ratio: 3 / 2;
+  perspective: 800px;
+}
+
+.envelope-back,
+.envelope-pocket,
+.envelope-flap {
+  position: absolute;
+  inset: 0;
+}
+
+.envelope-back {
+  background: #d98cb3;
+  border-radius: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), 0 0 40px rgba(170, 160, 255, 0.45);
+}
+
+/* The letter that peeks out once the flap is open */
+.envelope-paper {
+  position: absolute;
+  inset: 8% 7% 12%;
+  z-index: 2;
+  border-radius: 4px;
+  background: repeating-linear-gradient(transparent 0 13px, rgba(108, 92, 231, 0.2) 13px 14px) #fffaf0;
+}
+
+.envelope-pocket {
+  z-index: 3;
+  background: #f6c6dd;
+  border-radius: 6px;
+  clip-path: polygon(0 0, 50% 55%, 100% 0, 100% 100%, 0 100%);
+}
+
+/* Opens by turning over its top edge; script/main.js moves it behind the letter halfway */
+.envelope-flap {
+  z-index: 4;
+  background: #eeb0cf;
+  clip-path: polygon(0 0, 100% 0, 50% 58%);
+  transform-origin: 50% 0;
+}
+
+.envelope-seal {
+  position: absolute;
+  top: 58%;
+  left: 50%;
+  z-index: 5;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #f06595, #a61e4d);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.envelope-seal svg {
+  width: 55%;
+  fill: var(--gold);
+}
+
+.letter-hint {
+  margin: 28px 0 0;
+  font-size: 1.3rem;
+  color: var(--moonlight);
+}
+
+.letter-sheet {
+  width: min(92%, 560px);
+}
+
+/* Cream paper; a letter taller than the card scrolls inside it */
+.letter-card {
+  /* Makes the card the reference for the letter's positions, used to scroll along */
+  position: relative;
+  max-height: 68vh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(108, 92, 231, 0.35) transparent;
+  padding: 26px 30px;
+  border-radius: 10px;
+  background: #fffaf0;
+  color: #3d2f55;
+  text-align: left;
+  text-shadow: none;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5), 0 0 40px rgba(170, 160, 255, 0.45);
+}
+
+/* Ruled lines, one per line of text */
+.letter-text {
+  margin: 0;
+  font-family: "Dancing Script", cursive;
+  font-size: 1.6rem;
+  line-height: 1.8;
+  /* Line breaks typed in letterText (\n) start a new line */
+  white-space: pre-line;
+  overflow-wrap: break-word;
+  background: repeating-linear-gradient(transparent 0 calc(1.8em - 1px), rgba(108, 92, 231, 0.18) calc(1.8em - 1px) 1.8em);
+}
+
+/* script/main.js writes the letter in one character at a time */
+.letter-text span {
+  opacity: 0;
+}
+
+.letter-next {
+  margin: 18px 0 0;
+  cursor: pointer;
+  font-size: 1.3rem;
+  color: var(--gold);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--gold) 50%, transparent);
+  text-underline-offset: 6px;
+}
+
 .nine p {
   font-size: 2rem;
   font-weight: lighter;
@@ -379,6 +526,14 @@ h1.one {
 
   .wish h5 {
     font-size: 1.4rem;
+  }
+
+  .letter-card {
+    padding: 20px 18px;
+  }
+
+  .letter-text {
+    font-size: 1.35rem;
   }
 
   .nine p {
