@@ -5,7 +5,8 @@ const fetchData = () => {
     .then(data => {
       dataArr = Object.keys(data);
       dataArr.map(customData => {
-        if (data[customData] !== "") {
+        // birthdayTime sets the countdown rather than any text on the page
+        if (data[customData] !== "" && customData !== "birthdayTime") {
           if (customData === "imagePath") {
             document
               .querySelector(`[data-node-name*="${customData}"]`)
@@ -16,12 +17,128 @@ const fetchData = () => {
         }
 
         // Check if the iteration is over
-        // Run amimation if so
+        // Run amimation if so, once it's time
         if ( dataArr.length === dataArr.indexOf(customData) + 1 ) {
-          animationTimeline();
-        } 
+          countdown(data.birthdayTime, animationTimeline);
+        }
       });
     });
+};
+
+// Vietnam time is UTC+7
+const vietnamOffset = 7 * 60 * 60 * 1000;
+
+// "05/11/2026 00:00" in Vietnam time to the moment it stands for, in milliseconds; null if the
+// text isn't a real date written that way. The time is 24-hour, or 12-hour with AM/PM after it
+// ("05/11/2026 12:00 AM" is that midnight too), and may be left out
+const parseBirthday = text => {
+  const parts = text
+    .trim()
+    .match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})(?:\s+(\d{1,2}):(\d{2})(?::(\d{2}))?(?:\s*(AM|PM))?)?$/i);
+  if (!parts) return null;
+  const [day, month, year, clockHour, minute, second] = parts
+    .slice(1, 7)
+    .map(part => Number(part) || 0);
+  const half = (parts[7] || "").toUpperCase();
+  // 12-hour clock: 12 AM is 0:00, 1 PM is 13:00
+  if (half && (clockHour < 1 || clockHour > 12)) return null;
+  const hour = half ? (clockHour % 12) + (half === "PM" ? 12 : 0) : clockHour;
+  const time = Date.UTC(year, month - 1, day, hour, minute, second) - vietnamOffset;
+  // Date.UTC quietly rolls the likes of 31/11 or 25:00 over, so check it reads back the same
+  const check = new Date(time + vietnamOffset);
+  const real =
+    check.getUTCDate() === day &&
+    check.getUTCMonth() === month - 1 &&
+    check.getUTCHours() === hour &&
+    check.getUTCMinutes() === minute &&
+    check.getUTCSeconds() === second;
+  return real ? time : null;
+};
+
+// How far this device's clock is from the server's, going by the Date header of a fresh
+// request, so setting the phone's clock forward doesn't open the gift early. 0 if that fails
+const clockOffset = () =>
+  fetch(location.href, { method: "HEAD", cache: "no-store" })
+    .then(response => {
+      const serverTime = Date.parse(response.headers.get("Date"));
+      return Number.isNaN(serverTime) ? 0 : serverTime - Date.now();
+    })
+    .catch(() => 0);
+
+// On an iPhone a video may only play with sound if a tap started it. Starting and stopping
+// the clip during the tap on "Mở quà" lets it play with sound when its turn comes. Only once
+// it has downloaded, so this doesn't start a second download of it
+const unlockClip = () => {
+  if (!clip.done) return;
+  const video = document.querySelector(".clip video");
+  video.muted = false;
+  video.play().catch(() => {});
+  video.pause();
+};
+
+// Countdown: until birthdayTime in customize.json the page shows how long is left instead of
+// the show, then a tap on "Mở quà" starts it (that tap also lets the video play with sound).
+// With no birthdayTime the show starts straight away
+const countdown = (birthdayTime, start) => {
+  if (!birthdayTime) return start();
+
+  const gate = document.querySelector(".countdown");
+  const wait = gate.querySelector(".countdown-wait");
+  const ready = gate.querySelector(".countdown-ready");
+  const [days, hours, minutes, seconds] = gate.querySelectorAll(".countdown-clock span");
+  const two = number => String(number).padStart(2, "0");
+  const target = parseBirthday(birthdayTime);
+
+  // Written wrongly: say so rather than open the gift early
+  if (target === null) {
+    gate.querySelector(".countdown-title").textContent =
+      `birthdayTime trong customize.json cần có dạng "05/11/2026 00:00", hiện đang là "${birthdayTime}"`;
+    gate.querySelector(".countdown-clock").style.display = "none";
+    TweenMax.fromTo(gate, 0.8, { autoAlpha: 0 }, { autoAlpha: 1 });
+    return;
+  }
+
+  const vietnam = new Date(target + vietnamOffset);
+  gate.querySelector(".countdown-when").textContent =
+    `Mở lúc ${two(vietnam.getUTCHours())}:${two(vietnam.getUTCMinutes())} ngày ` +
+    `${two(vietnam.getUTCDate())}/${two(vietnam.getUTCMonth() + 1)}/${vietnam.getUTCFullYear()}`;
+
+  const openGift = () => {
+    unlockClip();
+    TweenMax.to(gate, 0.6, { autoAlpha: 0, onComplete: start });
+  };
+
+  clockOffset().then(offset => {
+    let counting = false;
+    const tick = () => {
+      const left = target - (Date.now() + offset);
+      if (left > 0) {
+        // Rounded up, so it never shows all zeros before the gift opens
+        const total = Math.ceil(left / 1000);
+        days.textContent = two(Math.floor(total / 86400));
+        hours.textContent = two(Math.floor(total / 3600) % 24);
+        minutes.textContent = two(Math.floor(total / 60) % 60);
+        seconds.textContent = two(total % 60);
+        counting = true;
+        return;
+      }
+
+      // Time's up: the clock makes way for the "Mở quà" button
+      clearInterval(timer);
+      if (counting) TweenMax.to(wait, 0.5, { autoAlpha: 0 });
+      else TweenMax.set(wait, { autoAlpha: 0 });
+      TweenMax.fromTo(
+        ready,
+        0.8,
+        { autoAlpha: 0, scale: 0.8 },
+        { autoAlpha: 1, scale: 1, ease: Back.easeOut, delay: counting ? 0.4 : 0 }
+      );
+      ready.querySelector(".countdown-open").addEventListener("click", openGift, { once: true });
+    };
+    const timer = setInterval(tick, 250);
+    tick();
+    TweenMax.fromTo(gate, 0.8, { autoAlpha: 0 }, { autoAlpha: 1 });
+  });
 };
 
 const random = (min, max) => min + Math.random() * (max - min);
@@ -328,35 +445,132 @@ const writeLetter = () => {
   return writing;
 };
 
+// Download the clip in the background from the moment the page opens, so it plays straight away
+// when its turn comes, even on a slow phone connection where browsers don't preload video on
+// their own. If the download fails, the video streams from the server instead
+const preloadClip = () => {
+  const video = document.querySelector(".clip video");
+  const source = video.getAttribute("src");
+  const progress = { loaded: 0, total: 0 };
+  let done = false;
+
+  const stream = () => {
+    video.preload = "auto";
+    video.src = source;
+  };
+
+  const ready = fetch(source)
+    .then(response => {
+      if (!response.ok) throw new Error(response.statusText);
+      progress.total = Number(response.headers.get("Content-Length")) || 0;
+      const reader = response.body.getReader();
+      const chunks = [];
+      const read = () =>
+        reader.read().then(({ done, value }) => {
+          if (done) return new Blob(chunks, { type: "video/mp4" });
+          chunks.push(value);
+          progress.loaded += value.length;
+          return read();
+        });
+      return read();
+    })
+    // Ready once the browser has read the downloaded copy; if it can't, stream it instead
+    .then(
+      blob =>
+        new Promise(resolve => {
+          const settle = event => {
+            video.removeEventListener("loadedmetadata", settle);
+            video.removeEventListener("error", settle);
+            if (event.type === "error") stream();
+            resolve();
+          };
+          video.addEventListener("loadedmetadata", settle);
+          video.addEventListener("error", settle);
+          video.preload = "auto";
+          video.src = URL.createObjectURL(blob);
+        })
+    )
+    .catch(stream)
+    .then(() => {
+      done = true;
+    });
+
+  return {
+    ready,
+    progress,
+    // Downloaded (or streaming instead) and ready to play
+    get done() {
+      return done;
+    }
+  };
+};
+
+// "Searching" after Send: the timeline waits until the clip has downloaded, showing how far
+// along it is if that takes more than a moment
+const waitForClip = timeline => {
+  const status = document.querySelector(".search-status");
+  const showProgress = () => {
+    const { loaded, total } = clip.progress;
+    status.textContent = total
+      ? `Đang tìm kiếm… ${Math.floor((loaded / total) * 100)}%`
+      : "Đang tìm kiếm…";
+    status.style.visibility = "visible";
+  };
+  const timer = setInterval(showProgress, 250);
+
+  clip.ready.then(() => {
+    clearInterval(timer);
+    status.style.visibility = "hidden";
+    timeline.resume();
+  });
+};
+
 // Video after "Send": the timeline is paused while it plays and resumes when it ends.
 // Browsers may refuse sound until the viewer has touched the page, so it falls back to
-// playing muted and the first tap anywhere turns the sound on
+// playing muted and the first tap anywhere turns the sound on. Some phones won't start a
+// video by themselves at all (an iPhone in Low Power Mode, for one): it then waits for a tap
 const playClip = timeline => {
   const video = document.querySelector(".clip video");
   const hint = document.querySelector(".clip-hint");
   const resume = () => timeline.resume();
+  const showHint = text => {
+    hint.textContent = text;
+    hint.style.visibility = text ? "visible" : "hidden";
+  };
 
   video.onended = resume;
+  // Broken or unsupported file: skip it instead of getting stuck
+  video.onerror = resume;
   video.currentTime = 0;
   video.muted = false;
-  hint.style.visibility = "hidden";
+  showHint("");
   video
     .play()
     .catch(() => {
       video.muted = true;
-      hint.style.visibility = "visible";
+      showHint("Nhấn vào màn hình để bật tiếng 🔊");
       document.addEventListener(
         "click",
         () => {
           video.muted = false;
-          hint.style.visibility = "hidden";
+          showHint("");
         },
         { once: true }
       );
       return video.play();
     })
-    // Can't play at all (missing file, power saving mode...): skip it instead of getting stuck
-    .catch(resume);
+    .catch(error => {
+      if (error.name !== "NotAllowedError") return resume();
+      showHint("Chạm vào màn hình để xem video ▶");
+      document.addEventListener(
+        "click",
+        () => {
+          video.muted = false;
+          video.play().catch(resume);
+        },
+        { once: true }
+      );
+    });
 };
 
 // Hold the timeline until the viewer taps the element, then carry on
@@ -473,6 +687,8 @@ const animationTimeline = () => {
     .to(".fake-btn", 0.1, {
       backgroundColor: palette("lavender")
     })
+    // Waits here, as if searching, until the clip has downloaded
+    .addPause("+=0", () => waitForClip(tl))
     .to(
       ".four",
       0.5,
@@ -754,6 +970,8 @@ const animationTimeline = () => {
   });
 };
 
-// Light up the sky right away, then run fetch and animation in sequence
+// Light up the sky and start downloading the clip right away, then run fetch and animation
+// in sequence
 starrySky();
+const clip = preloadClip();
 fetchData();
