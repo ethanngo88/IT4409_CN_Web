@@ -1,6 +1,8 @@
 // Import the data to customize and insert them into page
 const fetchData = () => {
-  fetch("customize.json")
+  // Always the latest customize.json, never a copy the browser kept from before an update:
+  // an old one could be missing birthdayTime and start the show early
+  fetch("customize.json", { cache: "no-store" })
     .then(data => data.json())
     .then(data => {
       dataArr = Object.keys(data);
