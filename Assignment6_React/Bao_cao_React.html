@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="Ngo Duc Anh 20235259">
+  <title>Báo cáo bài tập React CRUD</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root {
+      --ink: #1f2937;
+      --muted: #5b6b7f;
+      --navy: #234a7e;
+      --navy-dark: #1d3f6e;
+      --line: #d8e1ec;
+      --soft: #f2f6fb;
+      --code-bg: #f6f8fa;
+      --bad: #c2410c;
+      --good: #15803d;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 40px 16px 64px;
+      background: #eef2f7;
+      color: var(--ink);
+      font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .report {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 48px 56px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 6px 24px rgba(15, 23, 42, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 32px;
+      padding-bottom: 16px;
+      border-bottom: 3px solid var(--navy);
+      font-size: 30px;
+      line-height: 1.3;
+      color: var(--navy-dark);
+    }
+
+    h2 {
+      margin: 40px 0 14px;
+      font-size: 22px;
+      line-height: 1.35;
+      color: var(--navy-dark);
+    }
+
+    h3 {
+      margin: 28px 0 10px;
+      font-size: 18px;
+      line-height: 1.4;
+      color: var(--navy-dark);
+    }
+
+    p {
+      margin: 0 0 14px;
+    }
+
+    code {
+      font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+      font-size: 0.9em;
+      padding: 1px 5px;
+      border-radius: 4px;
+      background: var(--code-bg);
+      color: #0f3d73;
+    }
+
+    pre {
+      margin: 0 0 18px;
+      padding: 14px 18px;
+      overflow-x: auto;
+      background: var(--code-bg);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--navy);
+      border-radius: 6px;
+      line-height: 1.6;
+    }
+
+    pre code {
+      padding: 0;
+      background: none;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    pre.bad {
+      border-left-color: var(--bad);
+      background: #fff7f2;
+    }
+
+    pre.good {
+      border-left-color: var(--good);
+      background: #f3fbf5;
+    }
+
+    .code-label {
+      display: block;
+      margin-bottom: 6px;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+    }
+
+    pre.bad .code-label {
+      color: var(--bad);
+    }
+
+    pre.good .code-label {
+      color: var(--good);
+    }
+
+    figure {
+      margin: 18px 0 26px;
+      text-align: center;
+    }
+
+    figure svg {
+      display: block;
+      width: 100%;
+      height: auto;
+    }
+
+    figcaption {
+      margin-top: 10px;
+      font-size: 14px;
+      font-style: italic;
+      color: var(--muted);
+    }
+
+    .table-wrap {
+      margin: 0 0 18px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+
+    th,
+    td {
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--navy);
+      color: #fff;
+      font-weight: 600;
+    }
+
+    tbody tr:nth-child(even) {
+      background: var(--soft);
+    }
+
+    td code {
+      white-space: nowrap;
+    }
+
+    ul.steps {
+      margin: 0 0 16px;
+      padding-left: 0;
+      list-style: none;
+    }
+
+    ul.steps li {
+      position: relative;
+      margin-bottom: 6px;
+      padding-left: 22px;
+    }
+
+    ul.steps li::before {
+      content: "";
+      position: absolute;
+      left: 4px;
+      top: 0.7em;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--navy);
+    }
+
+    .note {
+      margin: 0 0 16px;
+      padding: 12px 16px;
+      background: var(--soft);
+      border-left: 4px solid var(--navy);
+      border-radius: 6px;
+    }
+
+    @media (max-width: 640px) {
+      body {
+        padding: 16px 12px 40px;
+      }
+
+      .report {
+        padding: 28px 18px;
+      }
+
+      h1 {
+        font-size: 25px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+
+    @media print {
+      @page {
+        size: A4;
+        margin: 18mm 16mm;
+      }
+
+      body {
+        padding: 0;
+        background: #fff;
+        font-size: 12pt;
+      }
+
+      .report {
+        max-width: none;
+        padding: 0;
+        box-shadow: none;
+      }
+
+      h2,
+      h3 {
+        break-after: avoid;
+      }
+
+      figure,
+      pre,
+      table {
+        break-inside: avoid;
+      }
+
+      th {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <article class="report">
+    <h1>Bài tập React CRUD</h1>
+
+    <!-- ===================== 1 ===================== -->
+    <h2>1. Sơ đồ cây Component</h2>
+
+    <figure>
+      <svg viewBox="0 0 780 250" role="img"
+        aria-label="Sơ đồ cây: App là component gốc, có ba component con SearchForm, AddUser và ResultTable">
+        <defs>
+          <marker id="tree-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+            orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#6b8fbb" />
+          </marker>
+        </defs>
+        <g font-family="Segoe UI, Roboto, Arial, sans-serif" text-anchor="middle">
+          <rect x="290" y="22" width="200" height="60" rx="10" fill="#234a7e" />
+          <text x="390" y="50" font-size="17" font-weight="700" fill="#fff">App</text>
+          <text x="390" y="70" font-size="12" fill="#dbe5f3">Component gốc</text>
+
+          <g fill="none" stroke="#6b8fbb" stroke-width="2.5">
+            <path d="M390 82 V126" />
+            <path d="M118 126 H662" />
+            <path d="M118 126 V172" marker-end="url(#tree-arrow)" />
+            <path d="M390 126 V172" marker-end="url(#tree-arrow)" />
+            <path d="M662 126 V172" marker-end="url(#tree-arrow)" />
+          </g>
+
+          <rect x="23" y="176" width="190" height="58" rx="10" fill="#f2f6fb" stroke="#9db6d6" stroke-width="1.5" />
+          <text x="118" y="203" font-size="16" font-weight="700" fill="#1d3f6e">SearchForm</text>
+          <text x="118" y="222" font-size="12" fill="#4b5d73">Nhập từ khóa</text>
+
+          <rect x="295" y="176" width="190" height="58" rx="10" fill="#f2f6fb" stroke="#9db6d6" stroke-width="1.5" />
+          <text x="390" y="203" font-size="16" font-weight="700" fill="#1d3f6e">AddUser</text>
+          <text x="390" y="222" font-size="12" fill="#4b5d73">Thêm người dùng</text>
+
+          <rect x="567" y="176" width="190" height="58" rx="10" fill="#f2f6fb" stroke="#9db6d6" stroke-width="1.5" />
+          <text x="662" y="203" font-size="16" font-weight="700" fill="#1d3f6e">ResultTable</text>
+          <text x="662" y="222" font-size="12" fill="#4b5d73">Danh sách và chỉnh sửa</text>
+        </g>
+      </svg>
+      <figcaption>Bốn Component của ứng dụng, hàm <code>renderUserFields</code> chỉ hỗ trợ dựng các ô nhập</figcaption>
+    </figure>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Component</th>
+            <th>Nhiệm vụ chính</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>App</td>
+            <td>Điều phối dữ liệu chung, chứa từ khóa <code>kw</code> và người dùng mới <code>newUser</code></td>
+          </tr>
+          <tr>
+            <td>SearchForm</td>
+            <td>Nhập nội dung tìm kiếm và thông báo thay đổi lên App</td>
+          </tr>
+          <tr>
+            <td>AddUser</td>
+            <td>Quản lý biểu mẫu và gửi người dùng mới lên App</td>
+          </tr>
+          <tr>
+            <td>ResultTable</td>
+            <td>Tải danh sách, lọc, hiển thị, sửa và xóa người dùng</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ===================== 2 ===================== -->
+    <h2>2. Sơ đồ luồng dữ liệu và lý do nâng trạng thái lên App</h2>
+
+    <figure>
+      <svg viewBox="0 0 800 335" role="img"
+        aria-label="Sơ đồ luồng dữ liệu: SearchForm gọi onChangeValue và AddUser gọi onAdd để gửi dữ liệu lên App; App truyền keyword và user xuống ResultTable; ResultTable gọi onAdded để App đặt newUser về null">
+        <defs>
+          <marker id="flow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+            orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#4a7fb0" />
+          </marker>
+          <marker id="flow-green" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+            orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#1a7f64" />
+          </marker>
+          <marker id="flow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7"
+            orient="auto-start-reverse">
+            <path d="M0 0 L10 5 L0 10 z" fill="#c2783a" />
+          </marker>
+        </defs>
+        <g font-family="Segoe UI, Roboto, Arial, sans-serif">
+          <!-- Arrows -->
+          <g fill="none" stroke-width="2.2">
+            <path d="M181 55 L298 130" stroke="#4a7fb0" marker-end="url(#flow-blue)" />
+            <path d="M181 229 L298 164" stroke="#4a7fb0" marker-end="url(#flow-blue)" />
+            <path d="M486 137 H588" stroke="#1a7f64" marker-end="url(#flow-green)" />
+            <path d="M486 158 H588" stroke="#1a7f64" marker-end="url(#flow-green)" />
+            <path d="M681 184 V297 H395 V188" stroke="#c2783a" marker-end="url(#flow-orange)" />
+          </g>
+
+          <!-- Boxes -->
+          <g text-anchor="middle">
+            <rect x="13" y="26" width="166" height="58" rx="10" fill="#f2f6fb" stroke="#9db6d6" stroke-width="1.5" />
+            <text x="96" y="53" font-size="16" font-weight="700" fill="#1d3f6e">SearchForm</text>
+            <text x="96" y="72" font-size="12" fill="#4b5d73">Ô tìm kiếm</text>
+
+            <rect x="13" y="200" width="166" height="58" rx="10" fill="#f2f6fb" stroke="#9db6d6" stroke-width="1.5" />
+            <text x="96" y="227" font-size="16" font-weight="700" fill="#1d3f6e">AddUser</text>
+            <text x="96" y="246" font-size="12" fill="#4b5d73">Biểu mẫu thêm</text>
+
+            <rect x="302" y="114" width="182" height="68" rx="10" fill="#234a7e" />
+            <text x="393" y="142" font-size="17" font-weight="700" fill="#fff">App</text>
+            <text x="393" y="163" font-size="12" fill="#dbe5f3">Giữ kw và newUser</text>
+
+            <rect x="592" y="114" width="180" height="68" rx="10" fill="#f2f6fb" stroke="#9db6d6" stroke-width="1.5" />
+            <text x="682" y="142" font-size="16" font-weight="700" fill="#1d3f6e">ResultTable</text>
+            <text x="682" y="163" font-size="12" fill="#4b5d73">Lưu users, hiển thị bảng</text>
+          </g>
+
+          <!-- Labels -->
+          <g font-size="12" font-weight="700">
+            <text x="184" y="33" fill="#1d3f6e">Gọi onChangeValue(từ khóa)</text>
+            <text x="186" y="265" fill="#1d3f6e">Gọi onAdd(người dùng)</text>
+            <text x="490" y="112" fill="#1a7f64">keyword = kw</text>
+            <text x="490" y="186" fill="#1a7f64">user = newUser</text>
+          </g>
+          <text x="538" y="316" font-size="11.5" text-anchor="middle" fill="#a35a1f">onAdded() → App đặt newUser = null</text>
+          <text x="18" y="330" font-size="11" fill="#5b6b7f">Từ component con lên cha qua hàm Props; từ cha xuống component con qua dữ liệu Props.</text>
+        </g>
+      </svg>
+      <figcaption>Hai luồng nâng trạng thái dùng chung, mũi tên biểu diễn việc truyền dữ liệu và gọi hàm</figcaption>
+    </figure>
+
+    <p>
+      Nâng trạng thái dùng chung (State Lifting) là đặt dữ liệu mà nhiều Component cần sử dụng vào Component cha chung
+      gần nhất, sau đó truyền xuống bằng Props (thuộc tính truyền giữa các Component). App là cha trực tiếp của
+      SearchForm, AddUser và ResultTable nên phù hợp để điều phối <code>kw</code> và <code>newUser</code>.
+    </p>
+
+    <h3>2.1. Luồng tìm kiếm qua kw</h3>
+    <ul class="steps">
+      <li><strong>Bước 1:</strong> Người dùng nhập từ khóa trong SearchForm.</li>
+      <li><strong>Bước 2:</strong> SearchForm gọi hàm <code>onChangeValue</code> với nội dung vừa nhập.</li>
+      <li><strong>Bước 3:</strong> App cập nhật <code>kw</code> bằng <code>setKeyword</code>.</li>
+      <li><strong>Bước 4:</strong> App truyền <code>kw</code> xuống ResultTable qua Props <code>keyword</code>.</li>
+      <li><strong>Bước 5:</strong> ResultTable dùng <code>filter()</code> để hiển thị các dòng phù hợp.</li>
+    </ul>
+    <pre><code>const [kw, setKeyword] = React.useState("");
+&lt;SearchForm onChangeValue={setKeyword} /&gt;
+&lt;ResultTable keyword={kw} ... /&gt;</code></pre>
+
+    <h3>2.2. Luồng thêm người dùng qua newUser</h3>
+    <ul class="steps">
+      <li><strong>Bước 1:</strong> AddUser quản lý các trường đang nhập bằng trạng thái cục bộ <code>user</code>.</li>
+      <li><strong>Bước 2:</strong> Khi lưu hợp lệ, AddUser gọi <code>onAdd(nguoiDung)</code>.</li>
+      <li><strong>Bước 3:</strong> App nhận dữ liệu trong <code>newUser</code>.</li>
+      <li><strong>Bước 4:</strong> App truyền <code>newUser</code> xuống ResultTable qua Props <code>user</code>.</li>
+      <li><strong>Bước 5:</strong> ResultTable thêm dòng vào danh sách <code>users</code> và gọi <code>onAdded()</code>.</li>
+      <li><strong>Bước 6:</strong> App đặt <code>newUser</code> về <code>null</code> để báo đã xử lý xong.</li>
+    </ul>
+    <pre><code>const [newUser, setNewUser] = React.useState(null);
+&lt;AddUser onAdd={setNewUser} /&gt;
+&lt;ResultTable user={newUser} onAdded={() =&gt; setNewUser(null)} ... /&gt;</code></pre>
+
+    <h3>2.3. Vì sao không đặt kw và newUser chỉ trong Component con?</h3>
+    <p>
+      Nếu <code>kw</code> chỉ ở SearchForm, ResultTable (là Component ngang cấp) không thể nhận trực tiếp giá trị đó
+      thông qua luồng Props từ cha xuống con. Nếu <code>newUser</code> chỉ ở AddUser, ResultTable cũng không biết thời
+      điểm có người dùng mới. Đưa hai dữ liệu này lên App giúp truyền thông tin theo một chiều rõ ràng, tránh việc các
+      Component con phụ thuộc trực tiếp vào nhau.
+    </p>
+    <p class="note">
+      <strong>Lưu ý:</strong> dữ liệu danh sách <code>users</code> vẫn được giữ ở ResultTable; App chỉ giữ tín hiệu người
+      dùng mới cần chuyển tới bảng. Các trạng thái chỉ dùng nội bộ như <code>adding</code>, <code>editing</code> và
+      <code>loading</code> không nhất thiết phải đưa lên App.
+    </p>
+
+    <!-- ===================== 3 ===================== -->
+    <h2>3. Bảng thống kê Props</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Nơi nhận</th>
+            <th>Tên Props</th>
+            <th>Giá trị được truyền từ App</th>
+            <th>Mục đích</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SearchForm</td>
+            <td><code>onChangeValue</code></td>
+            <td><code>setKeyword</code></td>
+            <td>Thông báo từ khóa mới để App cập nhật <code>kw</code></td>
+          </tr>
+          <tr>
+            <td>AddUser</td>
+            <td><code>onAdd</code></td>
+            <td><code>setNewUser</code></td>
+            <td>Chuyển người dùng mới từ form lên App</td>
+          </tr>
+          <tr>
+            <td>ResultTable</td>
+            <td><code>keyword</code></td>
+            <td><code>kw</code></td>
+            <td>Cung cấp từ khóa để lọc bảng</td>
+          </tr>
+          <tr>
+            <td>ResultTable</td>
+            <td><code>user</code></td>
+            <td><code>newUser</code></td>
+            <td>Cung cấp người dùng vừa được thêm</td>
+          </tr>
+          <tr>
+            <td>ResultTable</td>
+            <td><code>onAdded</code></td>
+            <td><code>() =&gt; setNewUser(null)</code></td>
+            <td>Báo đã nhận dữ liệu, App xóa tín hiệu tạm</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p>
+      Các Props là dữ liệu hoặc hàm do App truyền xuống. Component con không sửa trực tiếp Props; khi cần thay đổi dữ
+      liệu chung, nó gọi hàm được App cung cấp.
+    </p>
+
+    <!-- ===================== 4 ===================== -->
+    <h2>4. Một lỗi được phát hiện</h2>
+
+    <h3>4.1. Mô tả</h3>
+    <pre class="bad"><code><span class="code-label">Mã gây lỗi</span>&lt;button onClick={setAdding(false)}&gt;Hủy&lt;/button&gt;</code></pre>
+    <p>
+      Sau khi bấm “Thêm người dùng”, biểu mẫu vừa xuất hiện có thể đóng ngay, nên người dùng không thể tiếp tục nhập dữ
+      liệu. Không nhất thiết có một thông báo lỗi màu đỏ; đề bài cho phép mô tả hiện tượng sai.
+    </p>
+
+    <h3>4.2. Nguyên nhân</h3>
+    <p>
+      Biểu thức <code>setAdding(false)</code> có dấu ngoặc nên được thực thi ngay khi React đánh giá nội dung Component.
+      Giá trị trả về được gán cho <code>onClick</code>, thay vì truyền một hàm sẽ chạy khi có thao tác nhấn. Khi trạng
+      thái <code>adding</code> bị đặt thành <code>false</code>, điều kiện hiển thị biểu mẫu không còn thỏa mãn.
+    </p>
+
+    <h3>4.3. Sửa lỗi</h3>
+    <pre class="good"><code><span class="code-label">Mã đã sửa</span>&lt;button onClick={() =&gt; setAdding(false)}&gt;Hủy&lt;/button&gt;</code></pre>
+    <p>
+      Cú pháp <code>() =&gt; setAdding(false)</code> tạo một hàm mới. React chỉ gọi hàm đó khi người dùng thực sự nhấn
+      nút “Hủy”, vì vậy biểu mẫu không tự đóng khi hiển thị.
+    </p>
+  </article>
+</body>
+
+</html>

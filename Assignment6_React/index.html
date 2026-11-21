@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quản lý người dùng - React CRUD</title>
+  <link rel="icon" href="data:,">
+
+  <!-- React, ReactDOM và Babel (biên dịch JSX ngay trên trình duyệt) qua CDN -->
+  <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.development.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.26.4/babel.min.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 24px 16px;
+      font-family: "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f1f4f9;
+      color: #1f2937;
+    }
+
+    .app {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 24px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 20px;
+      font-size: 26px;
+    }
+
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .search-input {
+      flex: 1 1 260px;
+      max-width: 360px;
+      padding: 9px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .search-input:focus,
+    .form-row input:focus {
+      outline: none;
+      border-color: #2563eb;
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    /* Nút bấm */
+    button {
+      padding: 8px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #fff;
+      transition: filter 0.15s;
+    }
+
+    button:hover {
+      filter: brightness(0.92);
+    }
+
+    .btn-add,
+    .btn-save {
+      background: #16a34a;
+    }
+
+    .btn-edit {
+      background: #2563eb;
+    }
+
+    .btn-delete {
+      background: #dc2626;
+    }
+
+    .btn-cancel {
+      background: #e2e8f0;
+      color: #334155;
+    }
+
+    /* Bảng dữ liệu: cuộn ngang trên màn hình hẹp */
+    .table-wrapper {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: #475569;
+      white-space: nowrap;
+    }
+
+    tbody tr:hover {
+      background: #f8fafc;
+    }
+
+    td.actions {
+      white-space: nowrap;
+    }
+
+    td.actions button {
+      padding: 6px 12px;
+      margin-right: 6px;
+    }
+
+    .message {
+      text-align: center;
+      color: #64748b;
+      padding: 24px;
+    }
+
+    .count {
+      margin: 12px 0 0;
+      font-size: 13px;
+      color: #64748b;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.4);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+      z-index: 999;
+    }
+
+    /* Modal Content */
+    .modal-content {
+      background: #fff;
+      padding: 20px 24px;
+      border-radius: 8px;
+      width: 420px;
+      max-width: 100%;
+      max-height: 100%;
+      overflow-y: auto;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .modal-content h4 {
+      margin: 0 0 16px;
+      font-size: 18px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 12px;
+    }
+
+    .form-row label {
+      margin-bottom: 4px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #475569;
+    }
+
+    .form-row input {
+      padding: 8px 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .required {
+      color: #dc2626;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 16px;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    // Các trường của form Thêm / Sửa. street, suite, city nằm trong đối tượng lồng address
+    const FIELDS = [
+      { id: "name", label: "Họ tên", required: true },
+      { id: "username", label: "Username", required: true },
+      { id: "email", label: "Email", type: "email" },
+      { id: "street", label: "Đường" },
+      { id: "suite", label: "Số nhà / Căn hộ" },
+      { id: "city", label: "Thành phố" },
+      { id: "phone", label: "Số điện thoại", type: "tel" },
+      { id: "website", label: "Website" }
+    ];
+    const ADDRESS_FIELDS = ["street", "suite", "city"];
+
+    const EMPTY_USER = {
+      name: "", username: "", email: "",
+      address: { street: "", suite: "", city: "" },
+      phone: "", website: ""
+    };
+
+    // Lấy giá trị một trường của user, kể cả trường nằm trong address
+    const fieldValue = (user, id) =>
+      ADDRESS_FIELDS.includes(id) ? user.address[id] : user[id];
+
+    // ================= App: giữ state dùng chung, truyền xuống con qua props =================
+    function App() {
+      const [kw, setKeyword] = React.useState("");
+      const [newUser, setNewUser] = React.useState(null);
+
+      return (
+        <div className="app">
+          <h1>Quản lý người dùng</h1>
+          <div className="toolbar">
+            <SearchForm onChangeValue={setKeyword} />
+            <AddUser onAdd={setNewUser} />
+          </div>
+          <ResultTable keyword={kw} user={newUser} onAdded={() => setNewUser(null)} />
+        </div>
+      );
+    }
+
+    // ================= SearchForm: gửi từ khóa lên App =================
+    function SearchForm({ onChangeValue }) {
+      return (
+        <input
+          className="search-input"
+          type="text"
+          placeholder="Tìm theo họ tên, username"
+          onChange={(e) => onChangeValue(e.target.value)}
+        />
+      );
+    }
+
+    // ================= AddUser: form thêm người dùng mới =================
+    function AddUser({ onAdd }) {
+      const [adding, setAdding] = React.useState(false);
+      const [user, setUser] = React.useState(EMPTY_USER);
+
+      const handleChange = (e) => {
+        const { id, value } = e.target;
+        if (ADDRESS_FIELDS.includes(id)) {
+          // Sao chép cả address để không mất các trường địa chỉ còn lại
+          setUser({ ...user, address: { ...user.address, [id]: value } });
+        } else {
+          setUser({ ...user, [id]: value });
+        }
+      };
+
+      const handleAdd = () => {
+        if (user.name.trim() === "" || user.username.trim() === "") {
+          alert("Vui lòng nhập Họ tên và Username!");
+          return;
+        }
+        onAdd(user);
+        setUser(EMPTY_USER);
+        setAdding(false);
+      };
+
+      const handleCancel = () => {
+        setUser(EMPTY_USER);
+        setAdding(false);
+      };
+
+      return (
+        <div>
+          <button className="btn-add" onClick={() => setAdding(true)}>+ Thêm</button>
+          {adding && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h4>Thêm người dùng</h4>
+                {FIELDS.map((f) => (
+                  <div className="form-row" key={f.id}>
+                    <label htmlFor={f.id}>
+                      {f.label} {f.required && <span className="required">*</span>}
+                    </label>
+                    <input
+                      id={f.id}
+                      type={f.type || "text"}
+                      value={fieldValue(user, f.id)}
+                      onChange={handleChange}
+                    />
+                  </div>
+                ))}
+                <div className="modal-actions">
+                  <button className="btn-cancel" onClick={handleCancel}>Hủy</button>
+                  <button className="btn-add" onClick={handleAdd}>Thêm</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    // ================= ResultTable: tải, lọc, hiển thị, sửa, xóa =================
+    function ResultTable({ keyword, user, onAdded }) {
+      const [users, setUsers] = React.useState([]);
+      const [loading, setLoading] = React.useState(true);
+      const [error, setError] = React.useState(null);
+      const [editing, setEditing] = React.useState(null);
+
+      // Tải dữ liệu 1 lần khi component mount
+      React.useEffect(() => {
+        fetch("https://jsonplaceholder.typicode.com/users")
+          .then((res) => res.json())
+          .then((data) => {
+            setUsers(data);
+            setLoading(false);
+          })
+          .catch(() => {
+            setError("Không tải được dữ liệu. Vui lòng kiểm tra kết nối mạng.");
+            setLoading(false);
+          });
+      }, []);
+
+      // Khi App truyền xuống người dùng mới thì thêm vào danh sách
+      React.useEffect(() => {
+        if (user) {
+          // id mới lớn hơn id lớn nhất hiện có, để không trùng id kể cả sau khi đã xóa
+          setUsers((prev) => [
+            ...prev,
+            { ...user, id: Math.max(0, ...prev.map((u) => u.id)) + 1 }
+          ]);
+          onAdded();
+        }
+      }, [user]);
+
+      // Lọc danh sách theo keyword
+      const kw = keyword.trim().toLowerCase();
+      const filteredUsers = users.filter(
+        (u) =>
+          u.name.toLowerCase().includes(kw) ||
+          u.username.toLowerCase().includes(kw)
+      );
+
+      // Sao chép sâu (cả address) để sửa trên form không làm đổi dữ liệu gốc trong bảng
+      function editUser(u) {
+        setEditing({ ...u, address: { ...u.address } });
+      }
+
+      function handleEditChange(field, value) {
+        if (ADDRESS_FIELDS.includes(field)) {
+          setEditing({ ...editing, address: { ...editing.address, [field]: value } });
+        } else {
+          setEditing({ ...editing, [field]: value });
+        }
+      }
+
+      function saveUser() {
+        if (editing.name.trim() === "" || editing.username.trim() === "") {
+          alert("Vui lòng nhập Họ tên và Username!");
+          return;
+        }
+        setUsers((prev) => prev.map((u) => (u.id === editing.id ? editing : u)));
+        setEditing(null);
+      }
+
+      function removeUser(id) {
+        // Giữ lại tất cả người dùng có id khác với id cần xóa
+        setUsers((prev) => prev.filter((u) => u.id !== id));
+      }
+
+      const formatAddress = (address) =>
+        [address.street, address.suite, address.city].filter(Boolean).join(", ");
+
+      let message = null;
+      if (loading) message = "Đang tải dữ liệu...";
+      else if (error) message = error;
+      else if (filteredUsers.length === 0) message = "Không tìm thấy người dùng nào.";
+
+      return (
+        <div>
+          <div className="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Họ tên</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Địa chỉ</th>
+                  <th>Số điện thoại</th>
+                  <th>Thao tác</th>
+                </tr>
+              </thead>
+              <tbody>
+                {message ? (
+                  <tr>
+                    <td className="message" colSpan="7">{message}</td>
+                  </tr>
+                ) : (
+                  filteredUsers.map((u) => (
+                    <tr key={u.id}>
+                      <td>{u.id}</td>
+                      <td>{u.name}</td>
+                      <td>{u.username}</td>
+                      <td>{u.email}</td>
+                      <td>{formatAddress(u.address)}</td>
+                      <td>{u.phone}</td>
+                      <td className="actions">
+                        <button className="btn-edit" onClick={() => editUser(u)}>Sửa</button>
+                        <button className="btn-delete" onClick={() => removeUser(u.id)}>Xóa</button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          {!loading && !error && (
+            <p className="count">
+              Hiển thị {filteredUsers.length} / {users.length} người dùng
+            </p>
+          )}
+
+          {editing && (
+            <div className="modal-overlay">
+              <div className="modal-content">
+                <h4>Sửa người dùng #{editing.id}</h4>
+                {FIELDS.map((f) => (
+                  <div className="form-row" key={f.id}>
+                    <label htmlFor={`edit-${f.id}`}>
+                      {f.label} {f.required && <span className="required">*</span>}
+                    </label>
+                    <input
+                      id={`edit-${f.id}`}
+                      type={f.type || "text"}
+                      value={fieldValue(editing, f.id)}
+                      onChange={(e) => handleEditChange(f.id, e.target.value)}
+                    />
+                  </div>
+                ))}
+                <div className="modal-actions">
+                  <button className="btn-cancel" onClick={() => setEditing(null)}>Hủy</button>
+                  <button className="btn-save" onClick={saveUser}>Lưu</button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+
+</html>

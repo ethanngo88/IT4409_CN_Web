@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Async & Await Syntax Demo</title>
+
+<button id="btn">Run Demo</button>
+<pre id="out"></pre>
+
+<script>
+  function wait(ms) {
+    return new Promise(resolve => setTimeout(() => resolve("✅ Done"), ms));
+  }
+
+  async function runDemo() {
+    const out = document.getElementById("out");
+    out.textContent = "⏳ Waiting...";
+    const msg = await wait(1000);
+    out.textContent = msg;
+  }
+
+  document.getElementById("btn").onclick = runDemo;
+</script>
+
+</html>
